@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银行存客经营智能体 · 交互原型</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   银行存客经营智能体 · 交互原型
+   方向：金融精工 · Quiet Luxury（编辑部级极简金融UI）
+   字体：Noto Serif SC（展示）/ Noto Sans SC（正文）/ IBM Plex Mono（数据）
+   ============================================================ */
+:root{
+  --ink:#16181d; --ink-2:#545b68; --ink-3:#9aa3b1;
+  --paper:#f5f6f8; --paper-2:#eef0f4;
+  --surface:#ffffff;
+  --line:#e7eaef; --line-2:#d9dee6;
+  --accent:#1f4fd8; --accent-strong:#1739b3; --accent-deep:#12318f; --accent-soft:#eaf0fd;
+  --navy:#0b1322; --navy-2:#0e1829;
+  --green:#2bb673; --green-deep:#1e7d56; --green-soft:#e5f3ec;
+  --amber:#e0a53c; --amber-deep:#a8731b; --amber-soft:#fbf0dd;
+  --red:#e04b4b; --red-deep:#c22f2f; --red-soft:#fceaea;
+  --purple:#6d4fc7; --purple-soft:#f0ecfb;
+  --cyan:#0e8a94; --cyan-soft:#e2f4f6;
+  --font-sans:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;
+  --font-serif:'Noto Serif SC','Songti SC','SimSun',serif;
+  --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+  --shadow-sm:0 1px 2px rgba(13,21,36,.04),0 2px 8px rgba(13,21,36,.04);
+  --shadow-md:0 4px 12px rgba(13,21,36,.05),0 10px 28px rgba(13,21,36,.06);
+  --shadow-lg:0 24px 60px rgba(13,21,36,.22);
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+  /* 兼容别名：内容部件仍引用旧变量名 */
+  --text:var(--ink); --text-2:var(--ink-2); --text-3:var(--ink-3);
+  --bg:var(--paper); --bg-2:var(--paper-2); --card:var(--surface);
+  --blue:var(--accent); --blue-strong:var(--accent-strong); --blue-deep:var(--accent-deep); --blue-soft:var(--accent-soft);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font-sans);color:var(--ink);background:
+  radial-gradient(1400px 700px at 100% -12%, rgba(31,79,216,.05), transparent 55%),
+  linear-gradient(180deg,var(--paper),var(--paper-2));
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;color:var(--ink)}
+::selection{background:rgba(31,79,216,.18)}
+.num, [data-num]{font-variant-numeric:tabular-nums}
+
+/* ---------- App 外壳 ---------- */
+.app{display:grid;grid-template-columns:236px 1fr;height:100vh}
+/* 侧边栏 */
+.sidebar{background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);color:#aab6ca;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.sidebar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(84,144,255,.5),transparent)}
+.sidebar::after{content:"";position:absolute;inset:0;background:radial-gradient(420px 300px at -20% -10%,rgba(47,91,217,.16),transparent 60%);pointer-events:none}
+.sb-brand{display:flex;align-items:center;gap:12px;padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:1}
+.sb-brand .mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#2f5bd9,#4b7bff);display:grid;place-items:center;color:#fff;font-weight:700;font-size:17px;font-family:var(--font-serif);box-shadow:0 6px 16px rgba(47,91,217,.4)}
+.sb-brand .t{font-family:var(--font-serif);font-size:16.5px;font-weight:600;color:#fff;line-height:1.3;letter-spacing:.01em}
+.sb-brand .t small{display:block;font-family:var(--font-sans);font-size:9.5px;font-weight:400;color:#6b7d99;letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 18px;position:relative;z-index:1}
+.sb-nav::-webkit-scrollbar{width:6px}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.sb-group{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5a6b85;padding:18px 12px 7px;font-weight:500}
+.sb-item{display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border-radius:9px;color:#aab6ca;font-size:13px;transition:.16s;position:relative;text-align:left;font-weight:400}
+.sb-item svg{opacity:.85;transition:.16s}
+.sb-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.sb-item:hover svg{opacity:1}
+.sb-item.active{background:rgba(47,91,217,.16);color:#fff}
+.sb-item.active::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.sb-item .ic{width:18px;height:18px;display:grid;place-items:center;flex-shrink:0}
+.sb-item .badge{margin-left:auto;font-family:var(--font-mono);font-size:10px;background:rgba(255,255,255,.07);color:#7486a2;padding:1px 7px;border-radius:8px;font-weight:500}
+.sb-item.active .badge{background:rgba(255,255,255,.12);color:#cdd9ea}
+.sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06);position:relative;z-index:1}
+.sb-user{display:flex;align-items:center;gap:11px}
+.sb-user .av{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2f5bd9,#6d4fc7);display:grid;place-items:center;color:#fff;font-size:13px;font-weight:600}
+.sb-user .n{font-size:12.5px;color:#fff;font-weight:500}
+.sb-user .r{font-size:10.5px;color:#6b7d99;margin-top:1px}
+/* 主区 */
+.main{display:flex;flex-direction:column;min-width:0;position:relative}
+/* 顶栏 */
+.topbar{height:58px;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 22px;flex-shrink:0}
+.crumb{font-size:12.5px;color:var(--ink-3);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.crumb b{color:var(--ink);font-weight:600}
+.crumb .sep{color:var(--ink-3);opacity:.5}
+.top-search{flex:1;max-width:420px;position:relative}
+.top-search input{width:100%;height:34px;border:1px solid var(--line);border-radius:9px;padding:0 12px 0 34px;font-size:12.5px;background:var(--paper);outline:none;transition:.18s;color:var(--ink)}
+.top-search input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(31,79,216,.1)}
+.top-search .mag{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:14px}
+.top-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.top-btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:9px;font-size:12.5px;font-weight:500;color:var(--ink-2);border:1px solid var(--line);background:#fff;transition:.16s;white-space:nowrap}
+.top-btn:hover{border-color:var(--accent);color:var(--accent)}
+.top-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.top-btn.primary:hover{background:var(--accent-strong)}
+/* 编辑模式开关 */
+.edit-toggle{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:9px;font-size:12.5px;font-weight:500;border:1px solid var(--line);background:#fff;color:var(--ink-2);transition:.16s}
+.edit-toggle .sw{position:relative;width:34px;height:18px;background:var(--line-2);border-radius:10px;transition:.2s}
+.edit-toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.edit-toggle.on{border-color:var(--green);color:var(--green-deep);background:var(--green-soft)}
+.edit-toggle.on .sw{background:var(--green)}
+.edit-toggle.on .sw::after{left:18px}
+/* 内容区 */
+.content{flex:1;overflow-y:auto;padding:22px;scroll-behavior:smooth}
+.content::-webkit-scrollbar{width:9px}
+.content::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px}
+.content::-webkit-scrollbar-thumb:hover{background:#c6cdd8}
+.page{display:none;animation:pageIn .45s cubic-bezier(.22,.7,.32,1)}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page-head{margin-bottom:20px}
+.page-head h1{font-family:var(--font-serif);font-size:22px;font-weight:600;letter-spacing:.01em}
+.page-head .sub{font-size:12.5px;color:var(--ink-3);margin-top:5px}
+/* 栅格 */
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1280px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+/* 卡片 */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm);padding:20px;position:relative;transition:.2s}
+.card:hover{box-shadow:var(--shadow-md)}
+.card .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card .card-h h3{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
+.card .card-h h3::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--accent);flex-shrink:0}
+.card .card-h .more{font-size:12px;color:var(--accent);font-weight:500;cursor:pointer}
+.card .card-h .more:hover{opacity:.75}
+/* 天气卡片（经营雷达 Hero） */
+.weather{background:linear-gradient(135deg,#0c1830 0%,#12284a 52%,#17386b 100%);color:#eaf0fa;border:none;border-radius:var(--r-lg);box-shadow:0 20px 46px rgba(12,24,48,.32);overflow:hidden;position:relative}
+.weather::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(620px 260px at 92% -18%,rgba(84,144,255,.32),transparent 60%),
+  linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:auto,30px 30px,30px 30px;pointer-events:none}
+.weather .w-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative}
+.weather .w-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.1);font-weight:500;color:#eaf0fa}
+.weather .w-status .dot{width:7px;height:7px;border-radius:50%;background:#7ee2a8;box-shadow:0 0 8px #7ee2a8}
+.weather .w-date{font-size:12px;opacity:.66;font-family:var(--font-mono)}
+.weather .w-title{font-family:var(--font-serif);font-size:23px;font-weight:600;margin-top:16px;letter-spacing:.01em;position:relative;color:#fff}
+.weather .w-title small{font-family:var(--font-sans);font-weight:400;font-size:12.5px;opacity:.62;margin-left:10px}
+.weather .w-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px;position:relative}
+@media(max-width:900px){.weather .w-metrics{grid-template-columns:repeat(3,1fr)}}
+.w-metric{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:11px;padding:13px 16px;transition:.2s}
+.w-metric:hover{background:rgba(255,255,255,.09)}
+.w-metric .v{font-family:var(--font-mono);font-size:26px;font-weight:600;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.w-metric .l{font-size:11px;color:#9fb0cc;margin-top:7px}
+.w-metric .tr{font-size:10px;margin-top:4px;font-family:var(--font-mono)}
+.tr.up{color:#7ee2a8}.tr.down{color:#ffa9a9}
+/* 统计条 */
+.metric-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:1000px){.metric-strip{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px}
+.stat .ico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:19px}
+.stat .v{font-family:var(--font-mono);font-size:22px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:12px;color:var(--ink-3);margin-top:3px}
+.stat .delta{font-family:var(--font-mono);font-size:11px;margin-left:auto;padding:2px 8px;border-radius:6px;font-weight:500}
+.delta.pos{color:var(--green-deep);background:var(--green-soft)}
+.delta.neg{color:var(--red-deep);background:var(--red-soft)}
+/* 徽标 / 标签 */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:6px;font-family:var(--font-mono);letter-spacing:.01em;white-space:nowrap}
+.badge.blue{background:var(--accent-soft);color:var(--accent-deep)}
+.badge.green{background:var(--green-soft);color:var(--green-deep)}
+.badge.amber{background:var(--amber-soft);color:var(--amber-deep)}
+.badge.red{background:var(--red-soft);color:var(--red-deep)}
+.badge.purple{background:var(--purple-soft);color:var(--purple)}
+.badge.cyan{background:var(--cyan-soft);color:var(--cyan)}
+.badge.gray{background:#eef0f4;color:var(--ink-2)}
+/* 机会卡片 */
+.opp-card{display:flex;gap:14px;padding:16px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);transition:.18s;align-items:flex-start}
+.opp-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.opp-av{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:grid;place-items:center;color:#fff;font-weight:600;font-size:15px}
+.opp-body{flex:1;min-width:0}
+.opp-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opp-title{font-size:13.5px;font-weight:600}
+.opp-cust{font-size:12px;color:var(--ink-2);margin-top:2px}
+.opp-metrics{display:flex;gap:16px;margin-top:11px;flex-wrap:wrap}
+.opp-m{font-size:10.5px;color:var(--ink-3)}
+.opp-m b{display:block;font-family:var(--font-mono);font-size:13.5px;color:var(--ink);font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.opp-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0;flex-direction:column}
+.opp-actions .b{font-size:11.5px;padding:6px 11px;border-radius:7px;border:1px solid var(--line);transition:.14s;color:var(--ink-2)}
+.opp-actions .b:hover{border-color:var(--accent);color:var(--accent)}
+.opp-actions .b.acc{background:var(--accent);border-color:var(--accent);color:#fff}
+.opp-actions .b.acc:hover{background:var(--accent-strong)}
+/* 事件卡片 */
+.evt{display:flex;align-items:center;gap:13px;padding:14px 15px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);transition:.16s}
+.evt:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
+.evt .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:17px;flex-shrink:0}
+.evt .b{flex:1;min-width:0}
+.evt .t{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--ink)}
+.evt .c{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+.evt .prob{width:120px;flex-shrink:0}
+.evt .prob .lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-3);margin-bottom:3px}
+.evt .prob .lbl b{font-family:var(--font-mono);color:var(--ink)}
+.bar{height:6px;background:#eceff3;border-radius:4px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),#5b8def)}
+.bar.green>i{background:linear-gradient(90deg,#2bb673,#6fd3a2)}
+.bar.amber>i{background:linear-gradient(90deg,#e0a53c,#f3c86b)}
+.bar.red>i{background:linear-gradient(90deg,#e04b4b,#f28b8b)}
+/* 高风险客户 */
+.risk-card{display:flex;gap:12px;padding:14px;border:1px solid #f3d9d9;border-radius:var(--r-md);background:linear-gradient(135deg,#fff,var(--red-soft));align-items:center}
+.risk-card .tag-lv{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--red-deep);background:#fff;border:1px solid #f0b9b9;padding:2px 7px;border-radius:5px}
+/* 任务 */
+.task-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.task-item:last-child{border-bottom:none}
+.task-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--line-2);margin-top:1px;flex-shrink:0;cursor:pointer;transition:.14s;display:grid;place-items:center;color:#fff;font-size:11px}
+.task-check.done{background:var(--green);border-color:var(--green)}
+.task-item .t{font-size:13px;font-weight:500}
+.task-item .r{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+.task-item .due{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-left:auto;flex-shrink:0}
+/* 列表区标题 */
+.section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
+.section>.h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.section>.h h3{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
+.section>.h h3::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--accent);flex-shrink:0}
+.section>.h .more{font-size:12px;color:var(--accent);font-weight:500;cursor:pointer}
+.section>.b{padding:10px 18px 14px}
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:8px;font-size:12.5px;font-weight:500;transition:.16s}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-strong);box-shadow:0 6px 14px rgba(31,79,216,.28)}
+.btn.ghost{border:1px solid var(--line-2);color:var(--ink-2);background:#fff}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.text{color:var(--accent);padding:6px 10px}
+.btn.text:hover{background:var(--accent-soft)}
+.btn.danger{color:var(--red)}
+.btn.danger:hover{background:var(--red-soft)}
+.btn.sm{padding:5px 11px;font-size:12px}
+/* AI摘要 */
+.ai-summary{background:linear-gradient(135deg,#f7fafe,#eef3fd);border:1px solid #d8e4f8;border-radius:var(--r-md);padding:20px;position:relative}
+.ai-summary .ai-tag{position:absolute;top:-10px;left:20px;background:linear-gradient(135deg,#1f4fd8,#4b7bff);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:6px;letter-spacing:.06em}
+.evidence{margin-top:12px;border-top:1px dashed #d5e0f2;padding-top:12px}
+.ev-item{display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12px;color:var(--ink-2)}
+.ev-item .n{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);flex-shrink:0;font-weight:600;margin-top:2px}
+.ev-item .src{font-size:11px;color:var(--ink-3);font-family:var(--font-mono)}
+.ev-item .drill{color:var(--accent);font-size:11px;cursor:pointer;flex-shrink:0}
+.ev-item .drill:hover{text-decoration:underline}
+/* 情绪面板 */
+.emo-axis{height:120px;position:relative;background:linear-gradient(135deg,#f0f5fe,#fdf3ec);border-radius:10px;margin:10px 0;overflow:hidden}
+.emo-axis .pt{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(31,79,216,.16);transform:translate(-50%,-50%)}
+.emo-axis .vl{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-2)}
+.emo-axis .hl{position:absolute;top:50%;left:0;right:0;height:1px;background:var(--line-2)}
+.emo-axis .ax-l{position:absolute;font-size:9px;color:var(--ink-3);font-family:var(--font-mono)}
+/* 时间线 */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line-2)}
+.tl-item{position:relative;padding:0 0 18px 8px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-21px;top:5px;width:11px;height:11px;border-radius:50%;background:#fff;border:3px solid var(--accent)}
+.tl-item.done::before{border-color:var(--green);background:var(--green)}
+.tl-item.cur::before{border-color:var(--amber);background:#fff;box-shadow:0 0 0 4px rgba(224,165,60,.18)}
+.tl-item .tt{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.tl-item .td{font-size:12px;color:var(--ink-3);margin-top:3px}
+.tl-item .tm{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-top:3px}
+/* 对话 */
+.chat{display:flex;flex-direction:column;height:100%;min-height:0}
+.chat-list{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:11px;max-width:78%}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg .av{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;font-size:14px;color:#fff}
+.msg.ai .av{background:linear-gradient(135deg,#1f4fd8,#4b7bff)}
+.msg.user .av{background:linear-gradient(135deg,#e0a53c,#e04b4b)}
+.msg .bub{padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.7;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);color:var(--ink)}
+.msg.user .bub{background:var(--accent);color:#fff;border:none;border-bottom-right-radius:3px}
+.msg.ai .bub{border-top-left-radius:3px}
+.typing{display:inline-flex;gap:4px;padding:6px 0}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--ink-3);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.chat-input{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:#fff}
+.chat-input textarea{flex:1;resize:none;height:40px;border:1px solid var(--line);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;color:var(--ink)}
+.chat-input textarea:focus{border-color:var(--accent)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 12px}
+.chip{font-size:11.5px;padding:5px 12px;border-radius:16px;border:1px solid var(--line);color:var(--ink-2);background:#fff;transition:.14s}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+/* 表格 */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-2);font-weight:500}
+.tbl td{padding:12px;border-bottom:1px solid var(--line);color:var(--ink-2)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td b{color:var(--ink);font-weight:600}
+.tbl .num{font-family:var(--font-mono)}
+/* 过滤器 */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filters select,.filters input{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:12.5px;background:#fff;outline:none;color:var(--ink-2)}
+.filters select:focus,.filters input:focus{border-color:var(--accent)}
+/* 策略对比 */
+.strat-row{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:11px;margin-bottom:10px;transition:.16s}
+.strat-row:hover{border-color:var(--accent)}
+.strat-row.best{border-color:var(--green);background:var(--green-soft)}
+.strat-row .nm{width:70px;font-size:13px;font-weight:700}
+.strat-row .metric{flex:1;text-align:center}
+.strat-row .metric .v{font-family:var(--font-mono);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.strat-row .metric .l{font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.strat-row .crown{font-size:16px}
+/* Agent Council */
+.agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:1100px){.agent-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.agent-grid{grid-template-columns:1fr}}
+.agent-card{border:1px solid var(--line);border-radius:var(--r-md);padding:16px;background:var(--surface);transition:.16s;position:relative}
+.agent-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md)}
+.agent-card .hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.agent-card .hd .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:16px}
+.agent-card .hd .n{font-size:13px;font-weight:600}
+.agent-card .hd .n small{display:block;font-size:10.5px;color:var(--ink-3);font-weight:400}
+.agent-card .con{font-size:12.5px;color:var(--ink-2);line-height:1.7}
+.conflict{border:1px solid #f0dcb8;background:linear-gradient(135deg,#fff,#fdf6e8);border-radius:var(--r-md);padding:16px}
+/* 业务场景演示条 */
+.scen-bar{display:flex;align-items:center;gap:12px;padding:7px 22px;background:rgba(255,255,255,.7);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);flex-shrink:0;position:relative;z-index:10}
+.scen-ic{font-size:15px;flex-shrink:0}
+.scen-sel{height:30px;border:1px solid var(--line);border-radius:8px;padding:0 8px;font-size:12px;background:#fff;color:var(--ink-2);outline:none;font-weight:500;white-space:nowrap;cursor:pointer}
+.scen-steps{display:flex;gap:6px;align-items:center;flex:1;overflow-x:auto;padding:2px 0;scrollbar-width:thin}
+.scen-steps::-webkit-scrollbar{height:4px}
+.scen-steps::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+.scen-step{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;font-size:11.5px;color:var(--ink-2);border:1px solid var(--line);background:#fff;white-space:nowrap;transition:.14s;cursor:pointer}
+.scen-step:hover{border-color:var(--accent);color:var(--accent)}
+.scen-step .n{width:17px;height:17px;border-radius:50%;background:#eef0f4;display:grid;place-items:center;font-size:10px;font-family:var(--font-mono);font-weight:600;flex-shrink:0;color:var(--ink-2)}
+.scen-step.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.scen-step.active .n{background:rgba(255,255,255,.24);color:#fff}
+.scen-step.done{color:var(--accent-deep);border-color:var(--accent-soft);background:var(--accent-soft)}
+.scen-step.done .n{background:var(--accent);color:#fff}
+.scen-nav{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.scen-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:14px;line-height:1;transition:.14s}
+.scen-btn:hover{border-color:var(--accent);color:var(--accent)}
+.scen-idx{font-family:var(--font-mono);font-size:11px;color:var(--ink-3)}
+/* 场景卡片（场景页） */
+.scen-card{border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);box-shadow:var(--shadow-sm);padding:22px;transition:.18s;cursor:pointer;position:relative;overflow:hidden}
+.scen-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.scen-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#4b7bff)}
+.scen-card .sc-tag{font-size:11px;font-family:var(--font-mono);color:var(--accent);font-weight:600;letter-spacing:.05em}
+.scen-card h3{font-family:var(--font-serif);font-size:17px;font-weight:600;margin:9px 0 7px}
+.scen-card .sc-desc{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+.scen-card .sc-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}
+.scen-card .sc-steps{margin-top:15px;padding-top:15px;border-top:1px dashed var(--line)}
+.scen-card .sc-steps .ss{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--ink-2);padding:3px 0}
+.scen-card .sc-steps .ss b{font-family:var(--font-mono);color:var(--accent);font-weight:600;flex-shrink:0}
+.scen-card .sc-go{margin-top:16px;width:100%}
+/* 抽屉 */
+.drawer-mask{position:fixed;inset:0;background:rgba(11,19,34,.44);backdrop-filter:blur(2px);z-index:500;display:none;animation:fade .2s}
+.drawer-mask.show{display:block}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:520px;max-width:92vw;background:#fff;z-index:600;box-shadow:var(--shadow-lg);transform:translateX(100%);transition:transform .3s cubic-bezier(.22,.7,.32,1);display:flex;flex-direction:column}
+.drawer.show{transform:translateX(0)}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.drawer .dh h3{font-size:16px;font-weight:600}
+.drawer .db{flex:1;overflow-y:auto;padding:20px 22px}
+.drawer .df{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+/* Toast */
+.toast-wrap{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:900;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--navy);color:#fff;padding:10px 18px;border-radius:9px;font-size:12.5px;box-shadow:var(--shadow-lg);animation:toastIn .3s;display:flex;align-items:center;gap:8px}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+/* 编辑模式 */
+body.editing [data-e]{outline:1.5px dashed transparent;border-radius:4px;cursor:text;transition:.14s}
+body.editing [data-e]:hover{outline-color:var(--accent);background:rgba(31,79,216,.05)}
+body.editing [data-e]:focus{outline-color:var(--green);outline-style:solid;background:rgba(43,182,115,.06)}
+.edit-banner{display:none;position:sticky;top:0;z-index:100;background:linear-gradient(90deg,#fbf0dd,#eaf0fd);border:1px solid #eed9ae;border-bottom:none;border-radius:0 0 10px 10px;padding:8px 16px;font-size:12px;color:var(--amber-deep);text-align:center;margin:-22px -22px 18px}
+body.editing .edit-banner{display:block}
+body.editing .no-edit{display:none}
+/* 提示浮层 */
+.helper{position:fixed;bottom:20px;right:20px;z-index:400;background:var(--navy);color:#fff;padding:12px 16px;border-radius:11px;font-size:12px;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;max-width:320px;line-height:1.7}
+.helper.show{opacity:1}
+/* SVG 图 */
+.spark{width:100%;height:56px}
+.spark polyline{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.spark .area{fill:url(#gradBlue);stroke:none}
+
+/* ================= 自动演示视觉提示（?auto=1） ================= */
+.auto-hot{position:relative;outline:2px solid #e0a53c!important;outline-offset:2px;border-radius:8px;
+  animation:autoPulse .55s ease-in-out infinite alternate}
+@keyframes autoPulse{from{box-shadow:0 0 0 4px rgba(224,165,60,.20)}to{box-shadow:0 0 0 11px rgba(224,165,60,.02)}}
+.auto-badge{position:fixed;left:14px;bottom:14px;z-index:900;background:rgba(11,19,34,.86);color:#fff;
+  font-size:11.5px;letter-spacing:.02em;padding:7px 14px;border-radius:18px;display:flex;align-items:center;gap:9px;
+  pointer-events:none;font-family:inherit;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.auto-badge i{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:autoBlink 1s infinite}
+@keyframes autoBlink{50%{opacity:.2}}
+.auto-click{animation:autoClickFx .5s ease-out}
+@keyframes autoClickFx{0%{transform:scale(1)}35%{transform:scale(.975)}100%{transform:scale(1)}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="mark">银</div>
+      <div class="t">存客经营智能体<small>Agent OS · 存款经营</small></div>
+    </div>
+    <nav class="sb-nav" id="sbNav">
+      <div class="sb-group">场景演示</div>
+      <button class="sb-item" data-page="scenario"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>业务场景<span class="badge">4</span></button>
+      <div class="sb-group">经营</div>
+      <button class="sb-item active" data-page="radar"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 12L19 5"/></svg></span>经营雷达<span class="badge">12</span></button>
+      <button class="sb-item" data-page="customer"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg></span>客户世界</button>
+      <button class="sb-item" data-page="opportunity"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span>机会中心<span class="badge">28</span></button>
+      <button class="sb-item" data-page="moneystory"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/></svg></span>资金故事</button>
+      <button class="sb-item" data-page="event"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M13 3L5 14h6l-1 7 8-11h-6l1-7z"/></svg></span>事件雷达<span class="badge">18</span></button>
+      <button class="sb-item" data-page="simulate"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="1.8" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r="1.8" fill="currentColor" stroke="none"/></svg></span>策略模拟</button>
+      <button class="sb-item" data-page="sequence"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v8M9 18h7"/></svg></span>经营序列</button>
+      <div class="sb-group">智能</div>
+      <button class="sb-item" data-page="assistant"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5z"/></svg></span>AI 助手</button>
+      <button class="sb-item" data-page="council"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10M9 21V10M15 21V10M21 21V10M2 21h20M4 10l2-5h12l2 5"/></svg></span>Agent Council</button>
+      <div class="sb-group">执行</div>
+      <button class="sb-item" data-page="task"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span>任务面板<span class="badge">31</span></button>
+      <button class="sb-item" data-page="feedback"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5z"/><path d="M8 9h8M8 12h5"/></svg></span>反馈中心</button>
+      <div class="sb-group">系统</div>
+      <button class="sb-item" data-page="settings"><span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></span>设置</button>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="av">陈</div>
+        <div><div class="n" data-e="username">陈经理</div><div class="r">客户经理 · 城东支行</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 主区 -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb"><span id="crumbGroup">经营</span><span class="sep">/</span><b id="crumbPage">经营雷达</b></div>
+      <div class="top-search"><span class="mag">🔍</span><input id="globalSearch" placeholder="搜索客户、机会、事件、任务…" data-e></div>
+      <div class="top-actions">
+        <button class="edit-toggle" id="editToggle" onclick="toggleEdit()"><span class="sw"></span><span class="lbl">编辑模式</span></button>
+        <button class="top-btn" onclick="saveContent()" title="保存到本地">💾 保存</button>
+        <button class="top-btn primary" onclick="exportHTML()" title="导出为HTML文件">⬇ 导出</button>
+      </div>
+    </div>
+
+    <div class="scen-bar" id="scenBar">
+      <span class="scen-ic">🎬</span>
+      <select class="scen-sel" id="scenSelect" onchange="switchScenario(this.value)"></select>
+      <div class="scen-steps" id="scenSteps"></div>
+      <div class="scen-nav">
+        <button class="scen-btn" id="scenPrev" onclick="scenStep(-1)" title="上一步">‹</button>
+        <span class="scen-idx" id="scenIdx">—</span>
+        <button class="scen-btn" id="scenNext" onclick="scenStep(1)" title="下一步">›</button>
+      </div>
+    </div>
+
+    <div class="content" id="protoMain">
+      <div class="edit-banner">✏️ 编辑模式已开启 — 点击任意文字即可直接修改，修改后点击右上角「保存 / 导出」</div>
+      <!-- ================= 经营雷达 ================= -->
+<div class="page active" id="page-radar">
+  <div class="page-head">
+    <h1 data-e="radar-title">经营雷达</h1>
+    <div class="sub" data-e="radar-sub">今日最值得做什么 · 而非你有多少客户</div>
+  </div>
+
+  <!-- 今日经营天气 -->
+  <div class="card weather" style="margin-bottom:16px">
+    <div class="w-top">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="w-status"><span class="dot"></span><span data-e="w-status">高机会</span></span>
+        <span class="w-date" data-e="w-date">2026-10-06 · 周一</span>
+      </div>
+      <button class="btn ghost sm" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)" onclick="toast('数据已刷新')">⟳ 刷新</button>
+    </div>
+    <div class="w-title">今日经营天气<small data-e="w-note">系统已为你识别出 12 个高价值机会，优先处理标红客户</small></div>
+    <div class="w-metrics">
+      <div class="w-metric"><div class="v" data-e="m-opp">12</div><div class="l">高价值机会</div><div class="tr up">▲ 4</div></div>
+      <div class="w-metric"><div class="v" data-e="m-evt">18</div><div class="l">重要事件</div><div class="tr up">▲ 6</div></div>
+      <div class="w-metric"><div class="v" data-e="m-risk">23</div><div class="l">高风险客户</div><div class="tr down">▼ 3</div></div>
+      <div class="w-metric"><div class="v" data-e="m-task">31</div><div class="l">今日任务</div><div class="tr up">▲ 2</div></div>
+      <div class="w-metric"><div class="v" data-e="m-ai">15</div><div class="l">AI 推荐</div><div class="tr up">▲ 5</div></div>
+    </div>
+  </div>
+
+  <!-- 经营趋势 -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>经营趋势</h3><span class="badge gray" data-e="trend-range">近30天 · 机会数量</span></div>
+    <svg class="spark" viewBox="0 0 600 56" preserveAspectRatio="none">
+      <defs><linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f4fd8" stop-opacity=".28"/><stop offset="1" stop-color="#1f4fd8" stop-opacity="0"/></linearGradient></defs>
+      <polyline class="area" points="0,48 60,44 120,46 180,38 240,40 300,30 360,33 420,24 480,20 540,14 600,10"></polyline>
+      <polyline points="0,48 60,44 120,46 180,38 240,40 300,30 360,33 420,24 480,20 540,14 600,10"></polyline>
+    </svg>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1.35fr 1fr;align-items:start">
+    <!-- 左列 -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- 今日核心机会 -->
+      <div class="section">
+        <div class="h"><h3>今日核心机会</h3><span class="more" onclick="go('opportunity')">查看全部 →</span></div>
+        <div class="b" style="display:flex;flex-direction:column;gap:10px">
+          <div class="opp-card" data-drawer="opp-1">
+            <div class="opp-av" style="background:linear-gradient(135deg,#2f5bd9,#4b7bff)">张</div>
+            <div class="opp-body">
+              <div class="opp-top"><span class="opp-title" data-e>存款挽留 · 资金再配置</span><span class="badge red">高价值</span><span class="badge purple" data-e>因果效应 0.23</span></div>
+              <div class="opp-cust" data-e>张伟民 · 民营企业主 · 城东支行</div>
+              <div class="opp-metrics">
+                <div class="opp-m">机会价值<b data-e>¥2,500万</b></div>
+                <div class="opp-m">发生概率<b data-e>82%</b></div>
+                <div class="opp-m">因果效应<b data-e>0.23 [0.15,0.31]</b></div>
+                <div class="opp-m">紧迫度<b data-e>高 · 3天</b></div>
+              </div>
+            </div>
+            <div class="opp-actions">
+              <button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button>
+              <button class="b" onclick="event.stopPropagation();ignoreOpp(this)">忽略</button>
+              <button class="b" onclick="event.stopPropagation();toast('已暂缓，可稍后处理')">暂缓</button>
+            </div>
+          </div>
+          <div class="opp-card" data-drawer="opp-2">
+            <div class="opp-av" style="background:linear-gradient(135deg,#2bb673,#0e8a94)">陈</div>
+            <div class="opp-body">
+              <div class="opp-top"><span class="opp-title" data-e>资金回流 · 经营沉淀</span><span class="badge blue">中高价值</span></div>
+              <div class="opp-cust" data-e>陈志强 · 高净值 · 高新支行</div>
+              <div class="opp-metrics">
+                <div class="opp-m">机会价值<b data-e>¥1,800万</b></div>
+                <div class="opp-m">发生概率<b data-e>74%</b></div>
+                <div class="opp-m">紧迫度<b data-e>中 · 7天</b></div>
+              </div>
+            </div>
+            <div class="opp-actions">
+              <button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button>
+              <button class="b" onclick="event.stopPropagation();ignoreOpp(this)">忽略</button>
+              <button class="b" onclick="event.stopPropagation();toast('已暂缓，可稍后处理')">暂缓</button>
+            </div>
+          </div>
+          <div class="opp-card" data-drawer="opp-3">
+            <div class="opp-av" style="background:linear-gradient(135deg,#e0a53c,#e04b4b)">李</div>
+            <div class="opp-body">
+              <div class="opp-top"><span class="opp-title" data-e>财富经营 · 到期承接</span><span class="badge blue">中高价值</span></div>
+              <div class="opp-cust" data-e>李建国 · 稳健投资者 · 城东支行</div>
+              <div class="opp-metrics">
+                <div class="opp-m">机会价值<b data-e>¥2,000万</b></div>
+                <div class="opp-m">发生概率<b data-e>86%</b></div>
+                <div class="opp-m">紧迫度<b data-e>高 · 3天到期</b></div>
+              </div>
+            </div>
+            <div class="opp-actions">
+              <button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button>
+              <button class="b" onclick="event.stopPropagation();ignoreOpp(this)">忽略</button>
+              <button class="b" onclick="event.stopPropagation();toast('已暂缓，可稍后处理')">暂缓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 今日经营任务 -->
+      <div class="section">
+        <div class="h"><h3>今日经营任务</h3><span class="more" onclick="go('task')">查看全部 →</span></div>
+        <div class="b">
+          <div class="task-item"><div class="task-check done" onclick="toggleTask(this)">✓</div><div><div class="t" data-e>完成张伟民资金安排沟通</div><div class="r" data-e>来源：机会 · 存款挽留</div></div><span class="due" data-e>10:30</span></div>
+          <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>李建国理财到期前方案确认</div><div class="r" data-e>来源：事件 · 到期预警</div></div><span class="due" data-e>11:00</span></div>
+          <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>王芳教育金需求关怀回访</div><div class="r" data-e>来源：情感引擎 · 焦虑关怀</div></div><span class="due" data-e>14:30</span></div>
+          <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>刘敏沉睡客户激活试探</div><div class="r" data-e>来源：机会 · 客户激活</div></div><span class="due" data-e>16:00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右列 -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- 即将发生的金融事件 -->
+      <div class="section">
+        <div class="h"><h3>即将发生的金融事件</h3><span class="more" onclick="go('event')">查看全部 →</span></div>
+        <div class="b" style="display:flex;flex-direction:column;gap:10px">
+          <div class="evt" data-drawer="evt-1">
+            <div class="ic" style="background:var(--amber-soft)">💱</div>
+            <div class="b"><div class="t" data-e>资金再配置 FUND_REALLOCATION</div><div class="c" data-e>张伟民 · 2026-10-08 ~ 10-12 · 2000-4000万</div></div>
+            <div class="prob"><div class="lbl"><span>概率</span><b data-e>82%</b></div><div class="bar amber"><i style="width:82%"></i></div></div>
+          </div>
+          <div class="evt" data-drawer="evt-2">
+            <div class="ic" style="background:var(--blue-soft)">📅</div>
+            <div class="b"><div class="t" data-e>定期到期 DEPOSIT_MATURITY</div><div class="c" data-e>李建国 · 3天后 · 2000万</div></div>
+            <div class="prob"><div class="lbl"><span>概率</span><b data-e>95%</b></div><div class="bar green"><i style="width:95%"></i></div></div>
+          </div>
+          <div class="evt" data-drawer="evt-3">
+            <div class="ic" style="background:var(--red-soft)">🤫</div>
+            <div class="b"><div class="t" data-e>客户沉默 CUSTOMER_SILENCE</div><div class="c" data-e>刘敏 · 近30天无互动</div></div>
+            <div class="prob"><div class="lbl"><span>概率</span><b data-e>71%</b></div><div class="bar red"><i style="width:71%"></i></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 高风险客户 -->
+      <div class="section">
+        <div class="h"><h3>高风险客户</h3><span class="more" onclick="go('customer')">查看全部 →</span></div>
+        <div class="b" style="display:flex;flex-direction:column;gap:10px">
+          <div class="risk-card" data-drawer="risk-1">
+            <div class="opp-av" style="background:linear-gradient(135deg,#2f5bd9,#4b7bff);width:38px;height:38px">张</div>
+            <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:13.5px;font-weight:600" data-e>张伟民</span><span class="tag-lv">流失风险 · 高</span></div><div style="font-size:12px;color:var(--text-3);margin-top:2px" data-e>存款30天下降31.2%，资金疑似外流</div></div>
+          </div>
+          <div class="risk-card" data-drawer="risk-2">
+            <div class="opp-av" style="background:linear-gradient(135deg,#e0a53c,#e04b4b);width:38px;height:38px">刘</div>
+            <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:13.5px;font-weight:600" data-e>刘敏</span><span class="tag-lv">沉睡 · 中</span></div><div style="font-size:12px;color:var(--text-3);margin-top:2px" data-e>近90天无交易，资金沉淀待激活</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI推荐 -->
+      <div class="section">
+        <div class="h"><h3>AI 推荐</h3></div>
+        <div class="b" style="display:flex;flex-direction:column;gap:10px">
+          <div style="border:1px solid var(--line);border-radius:10px;padding:12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="badge blue">推荐</span><span class="badge gray" data-e>置信度 87%</span></div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.7" data-e>优先处理张伟民的资金再配置机会：因果效应值0.23高于客群均值，且情绪偏焦虑，建议先关怀后方案。</div>
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm ghost" onclick="go('simulate')">生成策略</button><button class="btn sm primary" onclick="go('assistant')">问AI助手</button></div>
+          </div>
+          <div style="border:1px solid var(--line);border-radius:10px;padding:12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="badge green">建议</span><span class="badge gray" data-e>置信度 81%</span></div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.7" data-e>今日不宜对王芳做产品营销——情绪状态处于焦虑期，建议采用关怀性触达，降低营销类机会优先级。</div>
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm ghost" onclick="go('customer')">查看客户</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 客户世界 ================= -->
+<div class="page" id="page-customer">
+  <div class="page-head" style="display:flex;align-items:flex-start;justify-content:space-between">
+    <div>
+      <h1 style="display:flex;align-items:center;gap:12px">
+ <span class="opp-av" style="background:linear-gradient(135deg,#2f5bd9,#4b7bff);width:46px;height:46px;font-size:18px">张</span>
+ <span data-e="cust-name">张伟民</span>
+ <span class="badge blue" data-e>民营企业家</span>
+ <span class="badge amber" data-e>金葵花 · 高价值</span>
+</h1>
+      <div class="sub" style="margin-top:6px" data-e="cust-sub">客户经理：陈经理 · 城东支行 · 风险等级 R3 · 生命周期：成长期</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn ghost sm" onclick="toast('已关注')">☆ 关注</button>
+      <button class="btn ghost sm" onclick="toast('标签编辑已打开')">🏷 编辑标签</button>
+      <button class="btn primary sm" onclick="go('task')">+ 创建任务</button>
+    </div>
+  </div>
+
+  <!-- AI客户摘要 -->
+  <div class="ai-summary" style="margin-bottom:16px">
+    <span class="ai-tag">AI 客户摘要</span>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+      <span style="font-size:14.5px;line-height:1.8;flex:1" data-e="cust-summary">该客户近期企业回款增加，个人账户出现阶段性资金沉淀；但近30天存款下降31.2%，其中1500万流向关联企业账户。结合近期交互语调轻度焦虑，判断处于<span style="color:var(--red-deep);font-weight:600">资金安排焦虑期</span>，建议优先关怀与资金安排沟通，而非直接产品营销。</span>
+      <span class="badge green" data-e="sum-conf">置信度 87%</span>
+    </div>
+    <div class="evidence">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;font-family:var(--font-mono)">证据链 EVIDENCE CHAIN</div>
+      <div class="ev-item"><span class="n">E1</span><span data-e>理财产品2000万预计3天后到期</span><span class="src">产品系统</span><span class="drill" onclick="drawer('证据详情',evHTML('理财产品2000万预计3天后到期','产品系统','2026-10-05'))">查看原始数据 →</span></div>
+      <div class="ev-item"><span class="n">E2</span><span data-e>近30天存款下降31.2%，1500万转关联企业账户</span><span class="src">交易系统</span><span class="drill" onclick="drawer('证据详情',evHTML('1500万转关联企业账户','交易系统','2026-10-04'))">查看原始数据 →</span></div>
+      <div class="ev-item"><span class="n">E3</span><span data-e>近7天活期资金增加，历史同期存在类似行为</span><span class="src">行为系统</span><span class="drill" onclick="drawer('证据详情',evHTML('近7天活期资金增加','行为系统','2026-10-03'))">查看原始数据 →</span></div>
+    </div>
+    <div style="font-size:11.5px;color:var(--text-3);margin-top:10px" data-e="sum-unc">⚠ 不确定性：尚无法确认资金最终是否留在本行，因果归因置信区间 [0.15, 0.31]</div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:16px">
+    <!-- 情绪状态 -->
+    <div class="card">
+      <div class="card-h"><h3>情绪状态 <span class="badge purple">★差异化</span></h3></div>
+      <div class="emo-axis">
+        <div class="vl"></div><div class="hl"></div>
+        <span class="ax-l" style="top:4px;left:50%;transform:translateX(-50%)">唤醒度 ↑</span>
+        <span class="ax-l" style="bottom:4px;right:6px">效价 →</span>
+        <div class="pt" style="left:38%;top:62%"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <span class="badge amber" data-e>主导情绪：焦虑</span>
+        <span class="badge red" data-e>效价 -0.32</span>
+        <span class="badge blue" data-e>唤醒度 0.71</span>
+        <span class="badge gray" data-e>趋势 ↓</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:10px" data-e="emo-src">信号来源：语音语调 · 文本语义 · 交互节奏</div>
+    </div>
+    <!-- 人生阶段 -->
+    <div class="card">
+      <div class="card-h"><h3>人生阶段 <span class="badge purple">★差异化</span></h3></div>
+      <div style="font-size:15px;font-weight:600;margin:4px 0" data-e>事业扩张期 · 子女教育金筹备</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.7" data-e="stage-sig">阶段转换信号：子女教育金咨询频率↑、企业扩产投资计划浮现、家庭保障配置需求初现。</div>
+      <div style="margin-top:10px"><span class="badge cyan" data-e>临近事件：教育金规划 · 未来30天</span></div>
+    </div>
+    <!-- 概览卡片 -->
+    <div class="card">
+      <div class="card-h"><h3>客户概览</h3></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:var(--bg);border-radius:8px;padding:10px"><div style="font-size:10.5px;color:var(--text-3)">金融状态</div><div class="num" style="font-family:var(--font-mono);font-weight:600" data-e>¥5,500万</div></div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px"><div style="font-size:10.5px;color:var(--text-3)">行为状态</div><div class="num" style="font-family:var(--font-mono);font-weight:600" data-e>活跃 · APP</div></div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px"><div style="font-size:10.5px;color:var(--text-3)">关系状态</div><div class="num" style="font-family:var(--font-mono);font-weight:600" data-e>紧密</div></div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px"><div style="font-size:10.5px;color:var(--text-3)">风险状态</div><div class="num" style="font-family:var(--font-mono);font-weight:600;color:var(--red-deep)" data-e>流失预警</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1.4fr 1fr;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- 资金故事 mini -->
+      <div class="section">
+        <div class="h"><h3>资金故事</h3><span class="more" onclick="go('moneystory')">查看详情 →</span></div>
+        <div class="b">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+            <span style="font-family:var(--font-mono);font-size:24px;font-weight:600;color:var(--red-deep)" data-e>↓ 31.2%</span>
+            <span style="font-size:12px;color:var(--text-3)" data-e>近30天 · -2,500万</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.7" data-e>1500万→关联企业 · 500万→理财 · 300万→外部 · 200万→经营支出。判断：更可能是资金结构调整，暂不判定关系恶化。</div>
+        </div>
+      </div>
+      <!-- 客户意图 -->
+      <div class="section">
+        <div class="h"><h3>客户意图</h3></div>
+        <div class="b">
+          <div class="opp-top" style="margin-bottom:6px"><span class="opp-title" data-e>资金周转 + 企业经营</span><span class="badge amber" data-e>AI推断</span><span class="badge red" data-e>情绪-意图分离 ⚠</span></div>
+          <div style="font-size:12px;color:var(--text-3)" data-e>客户口头表示"只是了解"，但语调紧张、频繁追问资金安排细节，判断存在隐性流动性需求。</div>
+        </div>
+      </div>
+      <!-- 金融事件 mini -->
+      <div class="section">
+        <div class="h"><h3>金融事件</h3><span class="more" onclick="go('event')">查看全部 →</span></div>
+        <div class="b">
+          <div class="evt" style="margin-bottom:8px" data-drawer="evt-1"><div class="ic" style="background:var(--amber-soft)">💱</div><div class="b"><div class="t" data-e>资金再配置</div><div class="c" data-e>概率82% · 2000-4000万</div></div><div class="badge amber" data-e>3天后</div></div>
+          <div class="evt" data-drawer="evt-2"><div class="ic" style="background:var(--blue-soft)">📅</div><div class="b"><div class="t" data-e>理财到期</div><div class="c" data-e>概率95% · 2000万</div></div><div class="badge blue" data-e>3天后</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- 记忆时间线 -->
+      <div class="section">
+        <div class="h"><h3>多尺度记忆 <span class="badge purple">★</span></h3></div>
+        <div class="b">
+          <div class="timeline">
+            <div class="tl-item done"><div class="tt" data-e>偏好记忆 · 更倾向电话沟通 <span class="badge gray">慢变量</span></div><div class="tm" data-e>2025-03 · 衰减 0.05/月</div></div>
+            <div class="tl-item done"><div class="tt" data-e>事实记忆 · 拥有制造企业 <span class="badge gray">慢变量</span></div><div class="tm" data-e>2025-11 · 知识图谱</div></div>
+            <div class="tl-item"><div class="tt" data-e>事件记忆 · 上周大额转出1500万 <span class="badge amber">快变量</span></div><div class="tm" data-e>2026-10-01 · 衰减 0.1/周</div></div>
+            <div class="tl-item cur"><div class="tt" data-e>情绪记忆 · 近期语调焦虑 <span class="badge red">快变量</span></div><div class="tm" data-e>2026-10-05 · 衰减 0.3/周</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- 客户偏好 -->
+      <div class="section">
+        <div class="h"><h3>客户偏好 <span class="badge purple">共同治理</span></h3></div>
+        <div class="b">
+          <div style="font-size:12.5px;color:var(--text-2);margin-bottom:6px"><b data-e>触达渠道：</b><span data-e>企业微信优先</span></div>
+          <div style="font-size:12.5px;color:var(--text-2);margin-bottom:6px"><b data-e>触达频率：</b><span data-e>每周 ≤ 2次</span></div>
+          <div style="font-size:12.5px;color:var(--text-2)"><b data-e>感兴趣产品：</b><span data-e>存款 · 固收理财 · 教育金</span></div>
+        </div>
+      </div>
+      <!-- 经营机会 -->
+      <div class="section">
+        <div class="h"><h3>经营机会</h3><span class="more" onclick="go('opportunity')">查看全部 →</span></div>
+        <div class="b">
+          <div class="opp-top" style="margin-bottom:6px"><span class="opp-title" data-e>存款挽留 · 资金再配置</span><span class="badge red" data-e>高价值</span></div>
+          <div class="opp-metrics"><div class="opp-m">价值<b data-e>¥2,500万</b></div><div class="opp-m">因果效应<b data-e>0.23</b></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 机会中心 ================= -->
+<div class="page" id="page-opportunity">
+  <div class="page-head"><h1 data-e>机会中心 · 机会市场</h1><div class="sub" data-e>从「客户列表」升级为「机会列表」</div></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="filters">
+      <span style="font-size:12.5px;color:var(--text-2)">筛选：</span>
+      <select><option>全部机会类型</option><option>存款挽留</option><option>资金回流</option><option>财富经营</option><option>客户激活</option></select>
+      <select><option>全部客户等级</option><option>高价值</option><option>中高价值</option></select>
+      <select><option>全部概率</option><option>概率 ≥ 0.7</option><option>概率 ≥ 0.8</option></select>
+      <input placeholder="搜索客户名称…" data-e>
+      <button class="btn primary sm" onclick="toast('筛选已应用')">应用筛选</button>
+    </div>
+  </div>
+
+  <div class="metric-strip" style="margin-bottom:16px">
+    <div class="stat"><div class="ico" style="background:var(--blue-soft)">🎯</div><div><div class="v" data-e>28</div><div class="l">总机会</div></div><span class="delta pos">+6</span></div>
+    <div class="stat"><div class="ico" style="background:var(--green-soft)">⚡</div><div><div class="v" data-e>12</div><div class="l">高价值机会</div></div><span class="delta pos">+4</span></div>
+    <div class="stat"><div class="ico" style="background:var(--amber-soft)">💰</div><div><div class="v" data-e>3.6亿</div><div class="l">机会总价值</div></div><span class="delta pos">+8%</span></div>
+    <div class="stat"><div class="ico" style="background:var(--red-soft)">⚠️</div><div><div class="v" data-e>3</div><div class="l">待仲裁冲突</div></div><span class="delta neg">需处理</span></div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+    <div class="opp-card" data-drawer="opp-1"><div class="opp-av" style="background:linear-gradient(135deg,#2f5bd9,#4b7bff)">张</div><div class="opp-body"><div class="opp-top"><span class="opp-title" data-e>存款挽留 · 资金再配置</span><span class="badge red">高价值</span><span class="badge purple" data-e>CATE 0.23</span></div><div class="opp-cust" data-e>张伟民</div><div class="opp-metrics"><div class="opp-m">价值<b data-e>¥2,500万</b></div><div class="opp-m">概率<b data-e>82%</b></div><div class="opp-m">窗口<b data-e>3天</b></div></div></div><div class="opp-actions"><button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button><button class="b" onclick="event.stopPropagation();toast('已转交')">转交</button></div></div>
+    <div class="opp-card" data-drawer="opp-3"><div class="opp-av" style="background:linear-gradient(135deg,#e0a53c,#e04b4b)">李</div><div class="opp-body"><div class="opp-top"><span class="opp-title" data-e>财富经营 · 到期承接</span><span class="badge blue">中高</span></div><div class="opp-cust" data-e>李建国</div><div class="opp-metrics"><div class="opp-m">价值<b data-e>¥2,000万</b></div><div class="opp-m">概率<b data-e>86%</b></div><div class="opp-m">窗口<b data-e>3天</b></div></div></div><div class="opp-actions"><button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button><button class="b" onclick="event.stopPropagation();toast('已转交')">转交</button></div></div>
+    <div class="opp-card" data-drawer="opp-2"><div class="opp-av" style="background:linear-gradient(135deg,#2bb673,#0e8a94)">陈</div><div class="opp-body"><div class="opp-top"><span class="opp-title" data-e>资金回流 · 经营沉淀</span><span class="badge blue">中高</span></div><div class="opp-cust" data-e>陈志强</div><div class="opp-metrics"><div class="opp-m">价值<b data-e>¥1,800万</b></div><div class="opp-m">概率<b data-e>74%</b></div><div class="opp-m">窗口<b data-e>7天</b></div></div></div><div class="opp-actions"><button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button><button class="b" onclick="event.stopPropagation();toast('已转交')">转交</button></div></div>
+    <div class="opp-card"><div class="opp-av" style="background:linear-gradient(135deg,#9aa3b1,#5a6474)">刘</div><div class="opp-body"><div class="opp-top"><span class="opp-title" data-e>客户激活 · 沉睡唤醒</span><span class="badge gray">普通</span></div><div class="opp-cust" data-e>刘敏</div><div class="opp-metrics"><div class="opp-m">价值<b data-e>¥600万</b></div><div class="opp-m">概率<b data-e>58%</b></div><div class="opp-m">窗口<b data-e>14天</b></div></div></div><div class="opp-actions"><button class="b acc" onclick="event.stopPropagation();acceptOpp(this)">接受</button><button class="b" onclick="event.stopPropagation();toast('已转交')">转交</button></div></div>
+  </div>
+</div>
+
+<!-- ================= 资金故事 ================= -->
+<div class="page" id="page-moneystory">
+  <div class="page-head"><h1 data-e>资金故事 · Money Story</h1><div class="sub" data-e>将数字变化转换为可理解的资金故事</div></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="filters" style="margin-bottom:12px">
+      <span style="font-size:12.5px;color:var(--text-2)">时间范围：</span>
+      <button class="chip" style="background:var(--blue);color:#fff;border-color:var(--blue)">近30天</button>
+      <button class="chip">近90天</button>
+      <button class="chip">近180天</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:34px;font-weight:600;color:var(--red-deep)" data-e>↓ -2,500万</div>
+        <div style="font-size:12.5px;color:var(--text-3)" data-e>存款下降 31.2%</div>
+      </div>
+      <div style="border-left:1px solid var(--line);padding-left:20px"><span class="badge green" data-e>置信度 86%</span></div>
+      <div style="border-left:1px solid var(--line);padding-left:20px"><span class="badge amber" data-e>判断：资金结构调整</span></div>
+      <div style="border-left:1px solid var(--line);padding-left:20px;flex:1;font-size:12.5px;color:var(--text-2);line-height:1.7" data-e>综合判断：本次余额下降更可能是资金结构调整，暂不判定为客户关系恶化。</div>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+    <!-- 资金流分类 -->
+    <div class="section">
+      <div class="h"><h3>资金流分类</h3></div>
+      <div class="b" style="display:flex;flex-direction:column;gap:10px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span data-e>关联企业账户</span><b class="num" style="color:var(--red-deep)" data-e>1,500万</b></div><div class="bar red"><i style="width:60%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span data-e>理财配置</span><b class="num" data-e>500万</b></div><div class="bar amber"><i style="width:20%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span data-e>外部账户</span><b class="num" data-e>300万</b></div><div class="bar"><i style="width:12%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span data-e>经营支出</span><b class="num" data-e>200万</b></div><div class="bar green"><i style="width:8%"></i></div></div>
+        <div class="risk-card" style="margin-top:6px"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--red-deep)" data-e>⚠ 未知资金流：1,200万元</div><div style="font-size:11.5px;color:var(--text-3)" data-e>资金去向无法确认，已强制标注，未由AI编造</div></div></div>
+      </div>
+    </div>
+    <!-- 因果归因 -->
+    <div class="section">
+      <div class="h"><h3>因果归因 <span class="badge purple">★差异化</span></h3></div>
+      <div class="b">
+        <div style="font-size:13px;color:var(--text-2);line-height:1.8" data-e>不仅回答「钱去哪了」，更回答「为什么减少」——区分<span style="font-weight:600">利率变化导致的流失</span>与<span style="font-weight:600">客户自身资金需求导致的转移</span>。</div>
+        <div style="margin:14px 0;padding:14px;background:var(--bg);border-radius:10px">
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;font-family:var(--font-mono)">条件平均处理效应 CATE</div>
+          <div style="display:flex;align-items:baseline;gap:12px"><span style="font-family:var(--font-mono);font-size:30px;font-weight:600;color:var(--blue)" data-e>0.23</span><span style="font-family:var(--font-mono);font-size:13px;color:var(--text-3)" data-e>置信区间 [0.15, 0.31]</span></div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:6px" data-e>方法：Double Machine Learning · 混淆因子已控制</div>
+        </div>
+        <div class="evidence">
+          <div class="ev-item"><span class="n">E1</span><span data-e>利率下调25bp后，同客群流失率上升</span><span class="src">市场数据</span></div>
+          <div class="ev-item"><span class="n">E2</span><span data-e>客户历史资金流出集中于企业经营周期</span><span class="src">交易系统</span></div>
+          <div class="ev-item"><span class="n">E3</span><span data-e>反事实推演：若未推荐，资金外流概率+18%</span><span class="src">因果引擎</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 事件雷达 ================= -->
+<div class="page" id="page-event">
+  <div class="page-head"><h1 data-e>金融事件雷达</h1><div class="sub" data-e>提前预判客户金融事件 · 事前响应而非事后补救</div></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="filters">
+      <select><option>全部事件类型</option><option>定期到期</option><option>资金再配置</option><option>大额交易</option><option>客户沉默</option></select>
+      <select><option>概率 ≥ 0.7</option><option>概率 ≥ 0.8</option><option>概率 ≥ 0.9</option></select>
+      <select><option>全部客户等级</option></select>
+      <input placeholder="时间窗口…" data-e>
+      <button class="btn primary sm" onclick="toast('事件筛选已应用')">应用</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="h"><h3>事件列表 · 按时间紧迫度排序</h3><span class="badge gray" data-e>阈值 0.7 可配置</span></div>
+    <div class="b" style="display:flex;flex-direction:column;gap:10px">
+      <div class="evt" data-drawer="evt-2"><div class="ic" style="background:var(--blue-soft)">📅</div><div class="b"><div class="t" data-e>定期到期 DEPOSIT_MATURITY <span class="badge green">重点事件</span></div><div class="c" data-e>李建国 · 2026-10-09 · 金额2000万</div></div><div class="prob"><div class="lbl"><span>概率</span><b data-e>95%</b></div><div class="bar green"><i style="width:95%"></i></div></div></div>
+      <div class="evt" data-drawer="evt-1"><div class="ic" style="background:var(--amber-soft)">💱</div><div class="b"><div class="t" data-e>资金再配置 FUND_REALLOCATION <span class="badge green">重点事件</span><span class="badge purple" data-e>因果结构 ✓</span></div><div class="c" data-e>张伟民 · 2026-10-08~10-12 · 2000-4000万</div></div><div class="prob"><div class="lbl"><span>概率</span><b data-e>82%</b></div><div class="bar amber"><i style="width:82%"></i></div></div></div>
+      <div class="evt" data-drawer="evt-3"><div class="ic" style="background:var(--red-soft)">🤫</div><div class="b"><div class="t" data-e>客户沉默 CUSTOMER_SILENCE</div><div class="c" data-e>刘敏 · 近30天无互动</div></div><div class="prob"><div class="lbl"><span>概率</span><b data-e>71%</b></div><div class="bar red"><i style="width:71%"></i></div></div></div>
+      <div class="evt"><div class="ic" style="background:var(--green-soft)">🏦</div><div class="b"><div class="t" data-e>大额存款流入 DEPOSIT_INFLOW</div><div class="c" data-e>陈志强 · 2026-10-15 · 金额待定</div></div><div class="prob"><div class="lbl"><span>概率</span><b data-e>63%</b></div><div class="bar"><i style="width:63%"></i></div></div></div>
+      <div class="evt"><div class="ic" style="background:var(--red-soft)">📉</div><div class="b"><div class="t" data-e>存款外流 DEPOSIT_OUTFLOW <span class="badge gray">EXPIRED</span></div><div class="c" data-e>某客户 · 已失效 · 进入模型评价</div></div><div class="prob"><div class="lbl"><span>概率</span><b data-e>—</b></div><div class="bar"><i style="width:0%"></i></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 策略模拟 ================= -->
+<div class="page" id="page-simulate">
+  <div class="page-head"><h1 data-e>策略模拟 · 因果沙盘</h1><div class="sub" data-e>比较不同经营策略的可能结果，决策前数据驱动评估</div></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>策略输入</h3><span class="badge gray" data-e>目标：提升AUM · 时间跨度 90天</span></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="border:1px solid var(--line);border-radius:10px;padding:13px;background:var(--bg)">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px">策略 A</div>
+        <div style="font-size:13px;font-weight:600" data-e>资金安排沟通</div>
+        <div style="font-size:11.5px;color:var(--text-3);margin-top:4px" data-e>纯关系维护，不推产品</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:13px;background:var(--bg)">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px">策略 B</div>
+        <div style="font-size:13px;font-weight:600" data-e>提供理财方案</div>
+        <div style="font-size:11.5px;color:var(--text-3);margin-top:4px" data-e>到期承接 + 固收配置</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:13px;background:var(--bg)">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px">策略 C</div>
+        <div style="font-size:13px;font-weight:600" data-e>综合经营方案</div>
+        <div style="font-size:11.5px;color:var(--text-3);margin-top:4px" data-e>存款 + 财富 + 教育金</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn primary" onclick="runSimulate()">▶ 开始模拟</button>
+      <button class="btn ghost" onclick="counterfactual()">🔀 反事实推演</button>
+    </div>
+  </div>
+
+  <!-- 模拟结果 -->
+  <div id="simResult" style="display:none">
+    <div class="card" style="margin-bottom:16px;border-color:var(--green)">
+      <div class="card-h"><h3>模拟结果对比</h3><span class="badge green">模拟完成</span></div>
+      <div class="strat-row best">
+        <div class="crown">👑</div><div class="nm">策略 C</div>
+        <div class="metric"><div class="v" data-e>73%</div><div class="l">成功概率</div></div>
+        <div class="metric"><div class="v" data-e>¥1,500万</div><div class="l">预计存款</div></div>
+        <div class="metric"><div class="v" data-e>8%</div><div class="l">客户反感</div></div>
+        <div class="metric"><div class="v" data-e>¥800万</div><div class="l">财富转化</div></div>
+        <button class="btn sm primary" onclick="go('sequence')">采纳并生成序列</button>
+      </div>
+      <div class="strat-row">
+        <div class="crown">🥈</div><div class="nm">策略 B</div>
+        <div class="metric"><div class="v" data-e>67%</div><div class="l">成功概率</div></div>
+        <div class="metric"><div class="v" data-e>¥1,800万</div><div class="l">预计存款</div></div>
+        <div class="metric"><div class="v" data-e>8%</div><div class="l">客户反感</div></div>
+        <div class="metric"><div class="v" data-e>¥200万</div><div class="l">财富转化</div></div>
+        <button class="btn sm ghost" onclick="toast('已采用策略B')">采纳</button>
+      </div>
+      <div class="strat-row">
+        <div class="crown">🥉</div><div class="nm">策略 A</div>
+        <div class="metric"><div class="v" data-e>42%</div><div class="l">成功概率</div></div>
+        <div class="metric"><div class="v" data-e>¥1,200万</div><div class="l">预计存款</div></div>
+        <div class="metric"><div class="v" data-e>18%</div><div class="l">客户反感</div></div>
+        <div class="metric"><div class="v" data-e>—</div><div class="l">财富转化</div></div>
+        <button class="btn sm ghost" onclick="toast('已采用策略A')">采纳</button>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="card">
+        <div class="card-h"><h3>置信区间</h3></div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:8px" data-e>策略C 预计存款 · 高/中/低</div>
+        <svg class="spark" viewBox="0 0 600 56" preserveAspectRatio="none"><polyline class="area" points="0,44 100,40 200,34 300,28 400,24 500,18 600,12"></polyline><polyline points="0,44 100,40 200,34 300,28 400,24 500,18 600,12"></polyline></svg>
+        <div style="display:flex;gap:10px;margin-top:8px;font-family:var(--font-mono);font-size:12px;color:var(--text-2)"><span data-e>低 1,200万</span><span data-e>中 1,500万</span><span data-e>高 1,900万</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>反事实推演 <span class="badge purple">★</span></h3></div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.8" data-e>若利率上浮 0.1%，策略C成功概率将由 73% 提升至 79%，但客户获取成本上升 12%。</div>
+        <div style="margin-top:10px;padding:10px;background:var(--amber-soft);border-radius:8px;font-size:12px;color:#8a5a00" data-e>⚠ 以上为基于历史数据和模型的预测结果，不代表实际结果。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 经营序列 ================= -->
+<div class="page" id="page-sequence">
+  <div class="page-head"><h1 data-e>经营序列 · Next Best Sequence</h1><div class="sub" data-e>将策略转化为可执行的 3~7 步经营序列</div></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:15px;font-weight:700" data-e>张伟民 · 综合经营方案</span>
+        <span class="badge green" data-e>RUNNING 执行中</span>
+        <span class="badge blue" data-e>目标：AUM提升8%</span>
+      </div>
+      <div style="display:flex;gap:8px"><button class="btn ghost sm" onclick="toast('序列已暂停')">⏸ 暂停</button><button class="btn ghost sm" onclick="toast('调整面板已打开')">✎ 调整</button><button class="btn danger sm" onclick="toast('序列已取消')">✕ 取消</button></div>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1.6fr 1fr;align-items:start">
+    <div class="section">
+      <div class="h"><h3>序列时间线</h3><span class="badge gray" data-e>共5步 · 动态调整</span></div>
+      <div class="b" style="padding:20px">
+        <div class="timeline">
+          <div class="tl-item done"><div class="tt" data-e>Day 1 · 资金安排沟通 <span class="badge green">已完成</span></div><div class="td" data-e>先关怀、了解资金动向，不推产品</div><div class="tm" data-e>10-06 · 已完成</div></div>
+          <div class="tl-item cur"><div class="tt" data-e>Day 5 · 提供方案 <span class="badge amber">进行中</span></div><div class="td" data-e>基于资金情况提供综合配置方案</div><div class="tm" data-e>10-10 · 待执行</div></div>
+          <div class="tl-item"><div class="tt" data-e>Day 7 · 再次跟进</div><div class="td" data-e>确认客户对方案的态度与顾虑</div><div class="tm" data-e>10-12 · 待执行</div></div>
+          <div class="tl-item"><div class="tt" data-e>Day 10 · 确认资金安排</div><div class="td" data-e>敲定资金再配置与产品承接</div><div class="tm" data-e>10-15 · 待执行</div></div>
+          <div class="tl-item"><div class="tt" data-e>Day 20 · 关系深化</div><div class="td" data-e>回访满意度，建立长期经营关系</div><div class="tm" data-e>10-25 · 待执行</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="section">
+        <div class="h"><h3>客户偏好硬约束 <span class="badge purple">共同治理</span></h3></div>
+        <div class="b">
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.8"><b data-e>触达渠道：</b><span data-e>企业微信</span><br><b data-e>触达频率：</b><span data-e>每周≤2次（当前1次 ✓）</span><br><b data-e>合规：</b><span data-e>触达频率未超上限 ✓</span></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="h"><h3>动态调整规则</h3></div>
+        <div class="b"><div style="font-size:12.5px;color:var(--text-2);line-height:1.8" data-e>客户明确表示「近期暂不考虑」时，序列自动：暂停 → 降低触达频率 → 重新观察事件 → 触发条件满足后重新规划。</div></div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#f6fbff,#eef6ff);border-color:#d6e8fb">
+        <div class="card-h"><h3>Agentic 自主经营</h3></div>
+        <div style="font-size:12.5px;color:var(--text-2);line-height:1.8" data-e>智能体已自主拆解「本季度A客群AUM提升8%」为子目标：触达28个客户、优先经营高价值机会12个、预计触达频次3次/客户。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= AI 助手 ================= -->
+<div class="page" id="page-assistant">
+  <div class="page-head"><h1 data-e>AI 客户经理助手</h1><div class="sub" data-e>自然语言查询 · AGUI动态卡片 · 流式输出</div></div>
+  <div class="card" style="padding:0;height:calc(100vh - 180px);display:flex;flex-direction:column;overflow:hidden">
+    <div class="chips">
+      <button class="chip" onclick="ask('帮我找未来7天最值得联系的20个客户')">找客户</button>
+      <button class="chip" onclick="ask('分析客户张伟民')">分析客户</button>
+      <button class="chip" onclick="ask('找机会')">找机会</button>
+      <button class="chip" onclick="ask('解释张伟民存款为什么下降')">解释变化</button>
+      <button class="chip" onclick="ask('查询李建国的到期事件')">查询事件</button>
+      <button class="chip" onclick="ask('生成策略')">生成策略</button>
+      <button class="chip" onclick="ask('生成任务')">生成任务</button>
+      <button class="chip" onclick="ask('总结客户王芳')">总结客户</button>
+    </div>
+    <div class="chat-list" id="chatList">
+      <div class="msg ai">
+        <div class="av">AI</div>
+        <div class="bub">
+          <div data-e>您好，我是AI客户经理助手。您可以用自然语言查询客户、机会、事件，我会以动态卡片形式返回结果。</div>
+          <div style="display:flex;gap:6px;margin-top:8px"><span class="badge gray" data-e>支持8类查询</span><span class="badge blue" data-e>权限隔离</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input">
+      <textarea id="chatInput" placeholder="输入您的问题，例如：帮我找未来7天最值得联系的20个客户…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="btn primary" onclick="sendChat()">发送 ➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Agent Council ================= -->
+<div class="page" id="page-council">
+  <div class="page-head"><h1 data-e>Agent Council · 多智能体协同决策</h1><div class="sub" data-e>高价值 · 复杂 · 高风险场景下的协同决策</div></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <span class="badge red" data-e>触发：高价值客户</span>
+      <span style="font-size:13px" data-e>客户：张伟民</span>
+      <span style="font-size:13px" data-e>机会：存款挽留 · 资金再配置</span>
+      <span class="badge amber" data-e>低置信度 · 需协同</span>
+    </div>
+  </div>
+
+  <div class="agent-grid" style="margin-bottom:16px">
+    <div class="agent-card"><div class="hd"><div class="ic" style="background:var(--blue-soft)">💰</div><div class="n">资金Agent<small>MoneyStoryAgent</small></div><span class="badge green" style="margin-left:auto">0.87</span></div><div class="con" data-e>建议今天联系客户，存在资金再配置机会，2000万理财即将到期。</div></div>
+    <div class="agent-card"><div class="hd"><div class="ic" style="background:var(--green-soft)">🤝</div><div class="n">客户关系Agent<small>RelationshipAgent</small></div><span class="badge gray" style="margin-left:auto">0.81</span></div><div class="con" data-e>不建议今天联系，客户近期情绪焦虑，直接销售可能引起反感。</div></div>
+    <div class="agent-card"><div class="hd"><div class="ic" style="background:var(--amber-soft)">💗</div><div class="n">情感Agent ★<small>EmotionAgent</small></div><span class="badge amber" style="margin-left:auto">0.79</span></div><div class="con" data-e>客户效价-0.32、唤醒度0.71，处于焦虑期，建议先关怀共情。</div></div>
+    <div class="agent-card"><div class="hd"><div class="ic" style="background:var(--red-soft)">🧠</div><div class="n">偏误Agent ★<small>BiasAgent</small></div><span class="badge red" style="margin-left:auto">0.72</span></div><div class="con" data-e>检测到客户存在损失厌恶偏误，对资金外流过度敏感。</div></div>
+    <div class="agent-card"><div class="hd"><div class="ic" style="background:#f3ecff">🔬</div><div class="n">因果Agent ★<small>CausalAgent</small></div><span class="badge purple" style="margin-left:auto">0.85</span></div><div class="con" data-e>CATE估计值0.23，置信区间[0.15,0.31]，策略对该客户真实有效。</div></div>
+    <div class="agent-card"><div class="hd"><div class="ic" style="background:#e5fbfb">🛡️</div><div class="n">合规Agent<small>ComplianceAgent</small></div><span class="badge cyan" style="margin-left:auto">通过</span></div><div class="con" data-e>所有建议均合规，触达频率未超上限，推理链可追溯。</div></div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+    <div class="conflict">
+      <div style="font-size:13px;font-weight:700;color:#b26a00;margin-bottom:8px">⚠ 冲突检测</div>
+      <div style="font-size:12.5px;color:var(--text-2);line-height:1.7" data-e><b>资金Agent</b> vs <b>客户关系Agent</b>：是否今天联系客户存在分歧。</div>
+      <div style="margin-top:12px;padding:12px;background:#fff;border-radius:8px;border:1px solid var(--line)">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">⚖️ 仲裁结果</div>
+        <div style="font-size:12.5px;color:var(--text-2);line-height:1.7" data-e>仲裁理由：客户情绪焦虑，直接销售可能引起反感。最终建议——今天不直接销售，但进行低打扰关系沟通。</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>合规推理链 <span class="badge purple">神经符号</span></h3></div>
+      <div style="font-size:12.5px;color:var(--text-2);line-height:1.9">
+        <div data-e>① [规则链] 客户风险评级R3，产品风险R3，符合适当性 ✓</div>
+        <div data-e>② [事实链] 近6月存款持续增长，流动性需求较低 ✓</div>
+        <div data-e>③ [行为链] 客户此前咨询过类似产品 ✓</div>
+        <div data-e>④ [结论] 推荐通过，附带完整推理链</div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px">👤 人工确认</div>
+        <div style="display:flex;gap:8px"><button class="btn primary sm" onclick="toast('已批准，生成经营任务')">批准</button><button class="btn ghost sm" onclick="toast('已驳回')">驳回</button><button class="btn ghost sm" onclick="toast('可修改决策')">修改</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 任务面板 ================= -->
+<div class="page" id="page-task">
+  <div class="page-head"><h1 data-e>任务面板</h1><div class="sub" data-e>今日经营任务 · 按优先级排序</div></div>
+  <div class="metric-strip" style="margin-bottom:16px">
+    <div class="stat"><div class="ico" style="background:var(--blue-soft)">📋</div><div><div class="v" data-e>31</div><div class="l">今日任务</div></div></div>
+    <div class="stat"><div class="ico" style="background:var(--green-soft)">✅</div><div><div class="v" data-e>9</div><div class="l">已完成</div></div></div>
+    <div class="stat"><div class="ico" style="background:var(--amber-soft)">⏳</div><div><div class="v" data-e>22</div><div class="l">进行中</div></div></div>
+    <div class="stat"><div class="ico" style="background:var(--red-soft)">🔥</div><div><div class="v" data-e>5</div><div class="l">紧急</div></div></div>
+  </div>
+  <div class="section">
+    <div class="h"><h3>今日任务清单</h3></div>
+    <div class="b">
+      <div class="task-item"><div class="task-check done" onclick="toggleTask(this)">✓</div><div><div class="t" data-e>完成张伟民资金安排沟通</div><div class="r" data-e>来源：机会 · 存款挽留 · 优先级高</div></div><span class="due" data-e>10:30</span></div>
+      <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>李建国理财到期前方案确认</div><div class="r" data-e>来源：事件 · 到期预警 · 优先级高</div></div><span class="due" data-e>11:00</span></div>
+      <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>王芳教育金需求关怀回访</div><div class="r" data-e>来源：情感引擎 · 焦虑关怀 · 优先级中</div></div><span class="due" data-e>14:30</span></div>
+      <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>刘敏沉睡客户激活试探</div><div class="r" data-e>来源：机会 · 客户激活 · 优先级中</div></div><span class="due" data-e>16:00</span></div>
+      <div class="task-item"><div class="task-check" onclick="toggleTask(this)"></div><div><div class="t" data-e>陈志强资金回流确认</div><div class="r" data-e>来源：事件 · 存款流入 · 优先级高</div></div><span class="due" data-e>17:00</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 反馈中心 ================= -->
+<div class="page" id="page-feedback">
+  <div class="page-head"><h1 data-e>反馈中心</h1><div class="sub" data-e>记录经营反馈 · 反向影响序列与记忆</div></div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+    <div class="card">
+      <div class="card-h"><h3>记录反馈</h3></div>
+      <textarea id="fbInput" style="width:100%;min-height:90px;border:1px solid var(--line);border-radius:9px;padding:12px;font-size:13px;resize:vertical;outline:none" data-e placeholder="输入自然语言反馈，例如：客户说这笔钱下周要用于厂房采购，目前不考虑做定期"></textarea>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <select style="flex:1;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:12.5px;color:var(--text-2)"><option>关联任务：张伟民资金安排沟通</option></select>
+      </div>
+      <button class="btn primary" style="margin-top:12px" onclick="structuredFeedback()">提交并结构化</button>
+    </div>
+    <div class="card" id="fbResult" style="border-color:#d6e8fb;background:linear-gradient(135deg,#f6fbff,#eef6ff)">
+      <div class="card-h"><h3>AI 自动结构化</h3><span class="badge blue">待确认</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:12.5px"><b style="color:var(--text-3)">客户需求：</b><span data-e>企业经营支出</span></div>
+        <div style="font-size:12.5px"><b style="color:var(--text-3)">金额：</b><span data-e>待确认</span></div>
+        <div style="font-size:12.5px"><b style="color:var(--text-3)">存款机会：</b><span class="badge amber" data-e>短期低</span></div>
+        <div style="font-size:12.5px"><b style="color:var(--text-3)">融资机会：</b><span class="badge blue" data-e>中</span></div>
+        <div style="font-size:12.5px"><b style="color:var(--text-3)">客户态度：</b><span data-e>明确拒绝当前定期方案</span></div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)">
+        <div style="font-size:12px;font-weight:700;margin-bottom:6px">🔔 状态联动</div>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.8" data-e>✓ 客户状态已更新 · ✓ 机会状态已更新 · ✓ 经营序列已暂停 · ✓ 记忆已写入</div>
+      </div>
+      <button class="btn primary sm" style="margin-top:12px" onclick="toast('结构化结果已确认并写入')">确认结构化结果</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 设置 ================= -->
+<div class="page" id="page-settings">
+  <div class="page-head"><h1 data-e>设置</h1><div class="sub" data-e>排序因子权重 · 概率阈值 · 触达频率上限（可配置化）</div></div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>机会排序因子权重</h3><span class="badge blue" data-e>不硬编码 · 实时生效</span></div>
+    <table class="tbl">
+      <tr><th>因子</th><th>权重</th><th>说明</th></tr>
+      <tr><td>机会价值</td><td class="num"><input type="range" value="0.30" step="0.01" style="width:120px"> <b data-e>0.30</b></td><td>机会的预期业务价值</td></tr>
+      <tr><td>事件发生概率</td><td class="num"><input type="range" value="0.20" step="0.01" style="width:120px"> <b data-e>0.20</b></td><td>事件发生的可能性</td></tr>
+      <tr><td>因果效应值（CATE）</td><td class="num"><input type="range" value="0.25" step="0.01" style="width:120px"> <b data-e>0.25</b></td><td>★ 替代转化概率</td></tr>
+      <tr><td>时间紧迫度</td><td class="num"><input type="range" value="0.15" step="0.01" style="width:120px"> <b data-e>0.15</b></td><td>越紧迫分越高</td></tr>
+      <tr><td>客户匹配度</td><td class="num"><input type="range" value="0.10" step="0.01" style="width:120px"> <b data-e>0.10</b></td><td>与客户偏好/人生阶段匹配</td></tr>
+    </table>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><div class="card-h"><h3>事件概率阈值</h3></div><div style="font-size:13px;color:var(--text-2)">重点事件阈值：<b data-e>0.70</b></div><input type="range" min="0.5" max="0.95" step="0.01" value="0.70" style="width:100%;margin-top:10px"></div>
+    <div class="card"><div class="card-h"><h3>触达频率上限</h3></div><div style="font-size:13px;color:var(--text-2)">每周触达上限：<b data-e>2 次</b></div><input type="range" min="1" max="7" step="1" value="2" style="width:100%;margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ================= 业务场景 ================= -->
+<div class="page" id="page-scenario">
+  <div class="page-head">
+    <h1 data-e>业务场景演示</h1>
+    <div class="sub" data-e>用真实的「客户经理的一天」串联各功能模块 · 点击卡片进入分步演示</div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+    <div class="scen-card" onclick="enterScenario(0)">
+      <div class="sc-tag">SCENARIO 01 · 存款挽留</div>
+      <h3 data-e>客户经理小王的一天</h3>
+      <div class="sc-desc" data-e>晨会看板发现高价值客户张伟民存款异常下降，从「找机会 → 懂客户 → 定策略 → 执行 → 反馈」完整走一遍存款挽留闭环。</div>
+      <div class="sc-meta">
+        <span class="badge blue" data-e>客户：张伟民</span>
+        <span class="badge red" data-e>价值 ¥2,500万</span>
+        <span class="badge amber" data-e>7 步</span>
+      </div>
+      <div class="sc-steps">
+        <div class="ss"><b>1</b><span data-e>经营雷达 — 发现存款下降机会</span></div>
+        <div class="ss"><b>2</b><span data-e>客户世界 — AI摘要提示资金焦虑</span></div>
+        <div class="ss"><b>3</b><span data-e>资金故事 — 因果归因 CATE 0.23</span></div>
+        <div class="ss"><b>4</b><span data-e>策略模拟 — 选定综合经营方案</span></div>
+        <div class="ss"><b>5</b><span data-e>经营序列 — 生成5步执行序列</span></div>
+        <div class="ss"><b>6</b><span data-e>任务面板 — 今日任务排期</span></div>
+        <div class="ss"><b>7</b><span data-e>反馈中心 — 记录反馈形成闭环</span></div>
+      </div>
+      <button class="btn primary sc-go">进入演示 →</button>
+    </div>
+
+    <div class="scen-card" onclick="enterScenario(1)">
+      <div class="sc-tag">SCENARIO 02 · 到期承接</div>
+      <h3 data-e>挽留即将到期的理财资金</h3>
+      <div class="sc-desc" data-e>事件雷达提前3天预警李建国的2000万理财到期，客户经理在资金流失前主动承接，避免到期后被动流失。</div>
+      <div class="sc-meta">
+        <span class="badge blue" data-e>客户：李建国</span>
+        <span class="badge green" data-e>价值 ¥2,000万</span>
+        <span class="badge amber" data-e>5 步</span>
+      </div>
+      <div class="sc-steps">
+        <div class="ss"><b>1</b><span data-e>事件雷达 — 到期事件 概率95%</span></div>
+        <div class="ss"><b>2</b><span data-e>机会中心 — 评估到期承接机会</span></div>
+        <div class="ss"><b>3</b><span data-e>客户世界 — 风险等级与偏好核对</span></div>
+        <div class="ss"><b>4</b><span data-e>策略模拟 — 模拟承接方案</span></div>
+        <div class="ss"><b>5</b><span data-e>经营序列 — 生成执行序列</span></div>
+      </div>
+      <button class="btn primary sc-go">进入演示 →</button>
+    </div>
+
+    <div class="scen-card" onclick="enterScenario(2)">
+      <div class="sc-tag">SCENARIO 03 · 沉睡激活</div>
+      <h3 data-e>唤醒低活跃的沉睡客户</h3>
+      <div class="sc-desc" data-e>从高风险客户中的沉睡名单出发，结合客户意图与多尺度记忆，用低打扰方式激活刘敏的资金沉淀。</div>
+      <div class="sc-meta">
+        <span class="badge blue" data-e>客户：刘敏</span>
+        <span class="badge gray" data-e>价值 ¥600万</span>
+        <span class="badge amber" data-e>5 步</span>
+      </div>
+      <div class="sc-steps">
+        <div class="ss"><b>1</b><span data-e>经营雷达 — 沉睡客户风险提示</span></div>
+        <div class="ss"><b>2</b><span data-e>客户世界 — 意图与记忆回溯</span></div>
+        <div class="ss"><b>3</b><span data-e>机会中心 — 客户激活机会</span></div>
+        <div class="ss"><b>4</b><span data-e>经营序列 — 低打扰激活序列</span></div>
+        <div class="ss"><b>5</b><span data-e>反馈中心 — 记录激活反馈</span></div>
+      </div>
+      <button class="btn primary sc-go">进入演示 →</button>
+    </div>
+
+    <div class="scen-card" onclick="enterScenario(3)">
+      <div class="sc-tag">SCENARIO 04 · Agent 协同</div>
+      <h3 data-e>高价值复杂场景的多智能体决策</h3>
+      <div class="sc-desc" data-e>当单一判断置信度不足时，多个专业Agent给出相互冲突的建议，通过冲突仲裁 + 合规推理链 + 人工确认完成决策。</div>
+      <div class="sc-meta">
+        <span class="badge blue" data-e>客户：张伟民</span>
+        <span class="badge purple" data-e>多Agent协同</span>
+        <span class="badge amber" data-e>5 步</span>
+      </div>
+      <div class="sc-steps">
+        <div class="ss"><b>1</b><span data-e>经营雷达 — 触发高价值复杂机会</span></div>
+        <div class="ss"><b>2</b><span data-e>Agent Council — 6个Agent给出建议</span></div>
+        <div class="ss"><b>3</b><span data-e>冲突检测 — 资金 vs 关系Agent分歧</span></div>
+        <div class="ss"><b>4</b><span data-e>仲裁 + 合规推理链 + 人工确认</span></div>
+        <div class="ss"><b>5</b><span data-e>任务面板 — 决策任务落地</span></div>
+      </div>
+      <button class="btn primary sc-go">进入演示 →</button>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 抽屉 -->
+<div class="drawer-mask" id="drawerMask" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="dh"><h3 id="drawerTitle">详情</h3><button class="btn ghost sm" onclick="closeDrawer()">✕ 关闭</button></div>
+  <div class="db" id="drawerBody"></div>
+  <div class="df"><button class="btn ghost" onclick="closeDrawer()">取消</button><button class="btn primary" onclick="toast('操作已确认')">确认</button></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<div class="helper" id="helper"></div>
+
+<script>
+/* ============================================================
+   银行存客经营智能体 · 交互原型 — 交互逻辑
+   ============================================================ */
+const LS_KEY = 'bankAgentProto_v1';
+
+const PAGES = {
+  scenario:{g:'场景演示', t:'业务场景'},
+  radar:{g:'经营', t:'经营雷达'},
+  customer:{g:'经营', t:'客户世界'},
+  opportunity:{g:'经营', t:'机会中心'},
+  moneystory:{g:'经营', t:'资金故事'},
+  event:{g:'经营', t:'事件雷达'},
+  simulate:{g:'经营', t:'策略模拟'},
+  sequence:{g:'经营', t:'经营序列'},
+  assistant:{g:'智能', t:'AI 助手'},
+  council:{g:'智能', t:'Agent Council'},
+  task:{g:'执行', t:'任务面板'},
+  feedback:{g:'执行', t:'反馈中心'},
+  settings:{g:'系统', t:'设置'},
+};
+
+/* ---------- 业务场景数据 ---------- */
+const SCENARIOS = [
+  { name:'存款挽留 · 客户经理小王的一天', steps:[
+    {page:'radar', label:'经营雷达', hint:'晨会看板发现高价值客户张伟民存款异常下降，系统已按「机会价值×概率×因果效应×紧迫度×匹配度」优先标红提示。'},
+    {page:'customer', label:'客户世界', hint:'AI客户摘要提示：客户处于「资金安排焦虑期」，建议先关怀后方案，而非直接产品营销。'},
+    {page:'moneystory', label:'资金故事', hint:'因果归因 CATE=0.23，判断是资金结构调整而非关系恶化，回答「钱去哪了、为什么减少」。'},
+    {page:'simulate', label:'策略模拟', hint:'对比三种策略，综合经营方案成功概率73%最高，客户反感度仅8%，选定执行。'},
+    {page:'sequence', label:'经营序列', hint:'策略自动生成5步执行序列，并受客户触达频率等偏好硬约束限制。'},
+    {page:'task', label:'任务面板', hint:'今日任务已按优先级排期，10:30 先做张伟民资金安排沟通。'},
+    {page:'feedback', label:'反馈中心', hint:'沟通后记录客户反馈，结构化结果反向更新序列与记忆，形成经营闭环。'},
+  ]},
+  { name:'到期承接 · 挽留到期理财资金', steps:[
+    {page:'event', label:'事件雷达', hint:'事件雷达提前3天预警李建国2000万理财到期，概率95%，属于「重点事件」。'},
+    {page:'opportunity', label:'机会中心', hint:'评估「财富经营·到期承接」机会，机会价值2000万、概率86%。'},
+    {page:'customer', label:'客户世界', hint:'核对李建国风险等级R3与产品偏好，确保适当性匹配后再推荐。'},
+    {page:'simulate', label:'策略模拟', hint:'模拟承接方案，比较续投/转存/固收配置三种路径的预期结果。'},
+    {page:'sequence', label:'经营序列', hint:'生成到期承接执行序列，确保在到期日前完成触达与方案确认。'},
+  ]},
+  { name:'沉睡激活 · 唤醒低活跃客户', steps:[
+    {page:'radar', label:'经营雷达', hint:'高风险客户名单中出现沉睡客户刘敏，近30天无互动、资金沉淀待激活。'},
+    {page:'customer', label:'客户世界', hint:'回溯客户意图与多尺度记忆（慢变量/快变量），寻找激活切入点。'},
+    {page:'opportunity', label:'机会中心', hint:'评估「客户激活·沉睡唤醒」机会，价值600万、概率58%。'},
+    {page:'sequence', label:'经营序列', hint:'生成低打扰激活序列，控制触达频率避免客户反感。'},
+    {page:'feedback', label:'反馈中心', hint:'记录激活反馈，更新客户状态与记忆，评估激活效果。'},
+  ]},
+  { name:'Agent协同 · 高价值复杂决策', steps:[
+    {page:'radar', label:'经营雷达', hint:'高价值复杂机会置信度不足，自动触发多Agent协同决策机制。'},
+    {page:'council', label:'Agent Council', hint:'6个专业Agent（资金/关系/情感/偏误/因果/合规）给出建议，置信度各异。'},
+    {page:'council', label:'冲突检测', hint:'资金Agent与关系Agent在「是否今天联系」上产生分歧，进入仲裁。'},
+    {page:'council', label:'仲裁与确认', hint:'仲裁给出「今天不销售但低打扰沟通」，合规推理链通过，等待人工确认。'},
+    {page:'task', label:'任务面板', hint:'人工批准后生成经营任务，落地执行并全程留痕。'},
+  ]},
+];
+
+let curScenario = 0, curStep = 0;
+
+/* ---------- 页面路由 ---------- */
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const t = document.getElementById('page-'+page);
+  if(t) t.classList.add('active');
+  document.querySelectorAll('#sbNav .sb-item').forEach(b=>b.classList.toggle('active', b.dataset.page===page));
+  const meta = PAGES[page] || {g:'场景演示', t:'业务场景'};
+  document.getElementById('crumbGroup').textContent = meta.g;
+  document.getElementById('crumbPage').textContent = meta.t;
+  const main = document.getElementById('protoMain');
+  if(main) main.scrollTop = 0;
+}
+
+/* ---------- 场景演示条 ---------- */
+function renderScenBar(){
+  const sel = document.getElementById('scenSelect');
+  sel.innerHTML = SCENARIOS.map((s,i)=>`<option value="${i}" ${i===curScenario?'selected':''}>${s.name}</option>`).join('');
+  renderScenSteps();
+}
+function renderScenSteps(){
+  const box = document.getElementById('scenSteps');
+  const s = SCENARIOS[curScenario];
+  box.innerHTML = s.steps.map((st,i)=>`
+    <button class="scen-step ${i===curStep?'active':''} ${i<curStep?'done':''}" onclick="goScenStep(${i})">
+      <span class="n">${i<curStep?'✓':i+1}</span>${st.label}
+    </button>`).join('');
+  document.getElementById('scenIdx').textContent = `${curStep+1}/${s.steps.length}`;
+  const act = box.querySelector('.scen-step.active');
+  if(act) setTimeout(()=>act.scrollIntoView({inline:'center', behavior:'smooth', block:'nearest'}), 50);
+}
+function switchScenario(i){
+  curScenario = +i; curStep = 0;
+  renderScenBar();
+  const st = SCENARIOS[curScenario].steps[0];
+  go(st.page); hint(st.hint);
+}
+function enterScenario(i){ switchScenario(i); }
+function goScenStep(i){
+  curStep = i;
+  renderScenSteps();
+  const st = SCENARIOS[curScenario].steps[i];
+  go(st.page); hint(st.hint);
+}
+function scenStep(delta){
+  const s = SCENARIOS[curScenario];
+  const next = Math.max(0, Math.min(s.steps.length-1, curStep+delta));
+  if(next!==curStep) goScenStep(next);
+}
+
+/* ---------- 提示浮层 / Toast ---------- */
+function hint(msg){
+  const h = document.getElementById('helper');
+  h.textContent = msg;
+  h.classList.add('show');
+  clearTimeout(hint._t);
+  hint._t = setTimeout(()=>h.classList.remove('show'), 7000);
+}
+function toast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(-8px)'; t.style.transition='.3s'; setTimeout(()=>t.remove(),300); }, 2200);
+}
+
+/* ---------- 抽屉 ---------- */
+function openDrawer(title, body){
+  document.getElementById('drawerTitle').textContent = title;
+  document.getElementById('drawerBody').innerHTML = body;
+  document.getElementById('drawerMask').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function drawer(t,h){ openDrawer(t,h); }
+function closeDrawer(){
+  document.getElementById('drawerMask').classList.remove('show');
+  document.getElementById('drawer').classList.remove('show');
+}
+function evHTML(title, src, date){
+  return `<div style="padding:4px 2px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">${title}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <span class="badge blue">来源：${src}</span><span class="badge gray">时间：${date}</span><span class="badge green">已验证 ✓</span>
+    </div>
+    <div class="evidence" style="margin-top:0">
+      <div class="ev-item"><span class="n">字段</span><span>交易对手：关联企业账户</span></div>
+      <div class="ev-item"><span class="n">字段</span><span>金额：¥15,000,000</span></div>
+      <div class="ev-item"><span class="n">字段</span><span>交易类型：对公转账</span></div>
+    </div>
+    <div style="margin-top:12px;padding:10px;background:var(--amber-soft);border-radius:8px;font-size:12px;color:#8a5a00">数据由系统原始记录直出，未经过AI改写或编造。</div>
+  </div>`;
+}
+
+const DRAWERS = {
+  'opp-1': { title:'机会详情 · 存款挽留', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="opp-av" style="background:linear-gradient(135deg,#2f5bd9,#4b7bff)">张</div>
+      <div><div style="font-size:15px;font-weight:700">存款挽留 · 资金再配置</div><div style="font-size:12px;color:var(--text-3)">张伟民 · 民营企业主 · 城东支行</div></div>
+      <span class="badge red" style="margin-left:auto">高价值 · TOP1</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">机会价值</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">¥2,500万</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">发生概率</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">82%</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">机会窗口</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">3 天</div></div>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">🧮 机会排序公式分解</div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-bottom:10px">Priority = 机会价值 × 事件概率 × 因果效应 × 紧迫度 × 匹配度 − 经营成本 − 风险扣减</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
+      <div class="ev-item"><span class="n">a</span><span>机会价值</span><b style="margin-left:auto;font-family:var(--font-mono)">2500万</b></div>
+      <div class="ev-item"><span class="n">b</span><span>事件发生概率</span><b style="margin-left:auto;font-family:var(--font-mono)">0.82</b></div>
+      <div class="ev-item"><span class="n">c</span><span>因果效应值 CATE ★</span><b style="margin-left:auto;font-family:var(--font-mono)">0.23 [0.15,0.31]</b></div>
+      <div class="ev-item"><span class="n">d</span><span>时间紧迫度</span><b style="margin-left:auto;font-family:var(--font-mono)">0.90</b></div>
+      <div class="ev-item"><span class="n">e</span><span>客户匹配度</span><b style="margin-left:auto;font-family:var(--font-mono)">0.80</b></div>
+      <div class="ev-item"><span class="n">f</span><span>经营成本 −</span><b style="margin-left:auto;font-family:var(--font-mono)">0.10</b></div>
+      <div class="ev-item"><span class="n">g</span><span>风险扣减 −</span><b style="margin-left:auto;font-family:var(--font-mono)">0.05</b></div>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">📌 建议动作</div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">先关怀沟通了解资金动向 → 基于因果效应值提供差异化资金安排方案 → 引导资金留存并承接到期理财。</div>
+    <div class="evidence">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;font-family:var(--font-mono)">证据链</div>
+      <div class="ev-item"><span class="n">E1</span><span>近30天存款下降31.2%</span><span class="src">交易系统</span></div>
+      <div class="ev-item"><span class="n">E2</span><span>1500万转入关联企业账户</span><span class="src">交易系统</span></div>
+      <div class="ev-item"><span class="n">E3</span><span>理财产品2000万3天后到期</span><span class="src">产品系统</span></div>
+    </div>
+  `},
+  'opp-2': { title:'机会详情 · 资金回流', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="opp-av" style="background:linear-gradient(135deg,#2bb673,#0e8a94)">陈</div>
+      <div><div style="font-size:15px;font-weight:700">资金回流 · 经营沉淀</div><div style="font-size:12px;color:var(--text-3)">陈志强 · 高净值 · 高新支行</div></div>
+      <span class="badge blue" style="margin-left:auto">中高价值</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">客户近期有经营回款，预计2026-10-15出现大额存款流入，建议提前铺垫承接方案，将流入资金沉淀为定期/固收。</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">机会价值</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">¥1,800万</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">发生概率</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">74%</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">窗口</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">7 天</div></div>
+    </div>
+    <div class="evidence">
+      <div class="ev-item"><span class="n">E1</span><span>近期企业回款记录</span><span class="src">交易系统</span></div>
+      <div class="ev-item"><span class="n">E2</span><span>历史同期有存款流入行为</span><span class="src">行为系统</span></div>
+    </div>
+  `},
+  'opp-3': { title:'机会详情 · 到期承接', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="opp-av" style="background:linear-gradient(135deg,#e0a53c,#e04b4b)">李</div>
+      <div><div style="font-size:15px;font-weight:700">财富经营 · 到期承接</div><div style="font-size:12px;color:var(--text-3)">李建国 · 稳健投资者 · 城东支行</div></div>
+      <span class="badge blue" style="margin-left:auto">中高价值</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">客户2000万理财3天后到期，风险等级R3、偏好稳健固收，建议在到期前完成续投/转存方案确认，避免到期后资金被同业截留。</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">机会价值</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">¥2,000万</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">发生概率</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">86%</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px"><div style="font-size:10.5px;color:var(--text-3)">窗口</div><div style="font-family:var(--font-mono);font-size:17px;font-weight:600">3 天</div></div>
+    </div>
+    <div class="evidence">
+      <div class="ev-item"><span class="n">E1</span><span>理财2000万 · 3天后到期</span><span class="src">产品系统</span></div>
+      <div class="ev-item"><span class="n">E2</span><span>风险等级R3 · 偏好固收</span><span class="src">客户档案</span></div>
+    </div>
+  `},
+  'evt-1': { title:'事件详情 · 资金再配置', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="ic" style="width:40px;height:40px;border-radius:10px;background:var(--amber-soft);display:grid;place-items:center;font-size:18px">💱</div>
+      <div><div style="font-size:15px;font-weight:700">资金再配置 FUND_REALLOCATION</div><div style="font-size:12px;color:var(--text-3)">张伟民 · 2026-10-08 ~ 10-12</div></div>
+      <span class="badge amber" style="margin-left:auto">概率 82%</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">预测客户将在未来几天进行资金结构调整，涉及金额约2000-4000万。系统通过因果结构建模判断该事件与存款下降存在关联。</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="badge green">因果结构 ✓</span><span class="badge blue">预测窗口 5天</span><span class="badge gray">模型 v3.2</span>
+    </div>
+    <div class="evidence">
+      <div class="ev-item"><span class="n">E1</span><span>历史同类客户行为模式</span><span class="src">行为系统</span></div>
+      <div class="ev-item"><span class="n">E2</span><span>近期资金异动信号</span><span class="src">交易系统</span></div>
+      <div class="ev-item"><span class="n">E3</span><span>因果效应值 0.23</span><span class="src">因果引擎</span></div>
+    </div>
+  `},
+  'evt-2': { title:'事件详情 · 定期到期', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="ic" style="width:40px;height:40px;border-radius:10px;background:var(--blue-soft);display:grid;place-items:center;font-size:18px">📅</div>
+      <div><div style="font-size:15px;font-weight:700">定期到期 DEPOSIT_MATURITY</div><div style="font-size:12px;color:var(--text-3)">李建国 · 2026-10-09 · 2000万</div></div>
+      <span class="badge green" style="margin-left:auto">概率 95%</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">客户2000万定期存款将于3天后到期，属确定性事件。历史数据显示，到期资金若7天内未承接，流失概率显著上升。</div>
+    <div class="evidence">
+      <div class="ev-item"><span class="n">E1</span><span>产品到期日 · 2026-10-09</span><span class="src">产品系统</span></div>
+      <div class="ev-item"><span class="n">E2</span><span>到期后7天流失率参考</span><span class="src">历史数据</span></div>
+    </div>
+  `},
+  'evt-3': { title:'事件详情 · 客户沉默', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="ic" style="width:40px;height:40px;border-radius:10px;background:var(--red-soft);display:grid;place-items:center;font-size:18px">🤫</div>
+      <div><div style="font-size:15px;font-weight:700">客户沉默 CUSTOMER_SILENCE</div><div style="font-size:12px;color:var(--text-3)">刘敏 · 近30天无互动</div></div>
+      <span class="badge red" style="margin-left:auto">概率 71%</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">客户近30天无主动互动、无交易，存在流失或沉睡风险。建议低打扰激活，避免高频触达引起反感。</div>
+    <div class="evidence">
+      <div class="ev-item"><span class="n">E1</span><span>近30天无交互记录</span><span class="src">行为系统</span></div>
+      <div class="ev-item"><span class="n">E2</span><span>近90天无交易</span><span class="src">交易系统</span></div>
+    </div>
+  `},
+  'risk-1': { title:'高风险客户 · 张伟民', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="opp-av" style="background:linear-gradient(135deg,#2f5bd9,#4b7bff)">张</div>
+      <div><div style="font-size:15px;font-weight:700">张伟民</div><div style="font-size:12px;color:var(--text-3)">民营企业主 · 高价值</div></div>
+      <span class="tag-lv" style="font-family:var(--font-mono);font-size:11px;color:var(--red-deep);background:#fff;border:1px solid #ffb3b3;padding:3px 8px;border-radius:5px;margin-left:auto">流失风险 · 高</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">存款30天下降31.2%，1500万转出至关联企业账户，资金疑似外流。结合情绪焦虑信号，判定为高流失风险客户，建议优先挽留。</div>
+    <div style="padding:12px;background:var(--red-soft);border-radius:8px;font-size:12px;color:var(--red-deep)">⚠ 风险扣减已计入机会排序：-0.05</div>
+  `},
+  'risk-2': { title:'高风险客户 · 刘敏', body:`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="opp-av" style="background:linear-gradient(135deg,#e0a53c,#e04b4b)">刘</div>
+      <div><div style="font-size:15px;font-weight:700">刘敏</div><div style="font-size:12px;color:var(--text-3)">沉睡客户 · 中等价值</div></div>
+      <span class="tag-lv" style="font-family:var(--font-mono);font-size:11px;color:#b26a00;background:#fff;border:1px solid #ffd9b3;padding:3px 8px;border-radius:5px;margin-left:auto">沉睡 · 中</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-2);line-height:1.8;margin-bottom:16px">近90天无交易、近30天无互动，资金沉淀约600万待激活。建议通过低打扰关怀与权益触达唤醒。</div>
+  `},
+};
+
+/* ---------- 交互：机会 / 任务 / 模拟 / 反馈 ---------- */
+function acceptOpp(el){
+  const card = el.closest('.opp-card');
+  card.style.borderColor = 'var(--green)';
+  card.style.background = 'linear-gradient(135deg,#fff,var(--green-soft))';
+  el.textContent = '已接受 ✓'; el.disabled = true;
+  toast('机会已接受，已生成经营任务');
+}
+function ignoreOpp(el){
+  const card = el.closest('.opp-card');
+  card.style.opacity = '.45';
+  card.style.borderColor = 'var(--line-2)';
+  toast('已忽略该机会');
+}
+function toggleTask(el){
+  const done = el.classList.toggle('done');
+  el.textContent = done ? '✓' : '';
+  toast(done ? '任务已完成' : '任务已恢复');
+}
+function runSimulate(){
+  const r = document.getElementById('simResult');
+  r.style.display = 'block';
+  r.querySelectorAll('.strat-row').forEach((row,i)=>{ row.style.animation = `pageIn .4s cubic-bezier(.2,.7,.3,1) ${i*.15}s both`; });
+  toast('模拟完成，已生成 3 个策略对比结果');
+  setTimeout(()=>r.scrollIntoView({behavior:'smooth', block:'start'}), 60);
+}
+function counterfactual(){
+  toast('反事实推演：若利率上浮 0.1%，策略C成功概率 +6%');
+}
+function structuredFeedback(){
+  const inp = document.getElementById('fbInput');
+  const res = document.getElementById('fbResult');
+  if(inp.value.trim()){ res.style.borderColor = 'var(--green)'; }
+  toast(inp.value.trim() ? '反馈已提取并结构化，已联动更新状态' : '请先输入反馈内容');
+}
+
+/* ---------- AI 助手 ---------- */
+function ask(text){ document.getElementById('chatInput').value = text; sendChat(); }
+function sendChat(){
+  const inp = document.getElementById('chatInput');
+  const q = inp.value.trim();
+  if(!q) return;
+  inp.value = '';
+  appendUser(q);
+  const list = document.getElementById('chatList');
+  const t = document.createElement('div');
+  t.className = 'msg ai';
+  t.innerHTML = `<div class="av">AI</div><div class="bub"><span class="typing"><i></i><i></i><i></i></span></div>`;
+  list.appendChild(t);
+  list.scrollTop = list.scrollHeight;
+  setTimeout(()=>{
+    t.innerHTML = `<div class="av">AI</div><div class="bub">${chatReply(q)}</div>`;
+    list.scrollTop = list.scrollHeight;
+  }, 750);
+}
+function appendUser(text){
+  const list = document.getElementById('chatList');
+  const m = document.createElement('div');
+  m.className = 'msg user';
+  m.innerHTML = `<div class="av">我</div><div class="bub">${escapeHtml(text)}</div>`;
+  list.appendChild(m);
+  list.scrollTop = list.scrollHeight;
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function chatReply(q){
+  if(/找.*客户|联系.*客户|最值得/.test(q)) return aguiCard('找客户','为你找到未来7天最值得联系的客户', [
+    ['张伟民','存款挽留 · 高价值','¥2,500万','82%','red'],
+    ['李建国','到期承接 · 中高','¥2,000万','86%','blue'],
+    ['陈志强','资金回流 · 中高','¥1,800万','74%','blue'],
+    ['刘敏','沉睡激活 · 普通','¥600万','58%','gray'],
+  ]);
+  if(/解释|为什么|下降|资金故事/.test(q)) return aguiStory();
+  if(/张伟民|分析客户/.test(q)) return aguiCustomer();
+  if(/李建国|到期|事件/.test(q)) return aguiEvent();
+  if(/机会/.test(q)) return aguiCard('找机会','当前共有 28 个经营机会，高价值 12 个', [
+    ['存款挽留','张伟民','¥2,500万','0.23','red'],
+    ['到期承接','李建国','¥2,000万','—','blue'],
+    ['资金回流','陈志强','¥1,800万','—','blue'],
+  ]);
+  if(/策略/.test(q)) return aguiCard('生成策略','基于因果效应值推荐以下策略', [
+    ['策略C · 综合经营','成功概率73%','预计存款¥1,500万','最佳','green'],
+    ['策略B · 理财方案','成功概率67%','预计存款¥1,800万','—',''],
+    ['策略A · 关系维护','成功概率42%','预计存款¥1,200万','—',''],
+  ]);
+  if(/任务/.test(q)) return aguiCard('生成任务','已生成今日经营任务', [
+    ['10:30','张伟民资金安排沟通','高','red'],
+    ['11:00','李建国到期方案确认','高','red'],
+    ['14:30','王芳教育金关怀回访','中','amber'],
+  ]);
+  if(/王芳|总结客户/.test(q)) return aguiSummary();
+  return aguiGeneric();
+}
+
+function aguiCard(title, sub, rows){
+  const cells = rows.map(r=>{
+    const [a,b,c,d,cls] = r;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px">
+      <b style="min-width:0;flex:1">${a}</b><span style="color:var(--text-3)">${b}</span>
+      <b class="num" style="font-family:var(--font-mono)">${c}</b>${d?`<span class="badge ${cls}">${d}</span>`:''}
+    </div>`;
+  }).join('');
+  return `<div><b>${title}</b><span style="font-size:11px;color:var(--text-3);margin-left:8px">${sub}</span>
+    <div style="margin-top:10px;padding:6px 12px 2px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe">${cells}</div>
+    <div style="display:flex;gap:6px;margin-top:10px"><span class="badge green">置信度 87%</span><span class="badge gray">结论+证据+置信度+建议</span></div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm primary" onclick="go('opportunity')">查看机会</button><button class="btn sm ghost" onclick="go('task')">生成任务</button></div></div>`;
+}
+function aguiStory(){
+  return `<div><b>解释变化：张伟民存款为什么下降</b>
+    <div style="margin-top:10px;font-size:12.5px;line-height:1.8;color:var(--text-2)"><b>结论：</b>近30天存款下降31.2%（-2,500万），更可能是资金结构调整而非关系恶化。</div>
+    <div style="margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe">
+      <div class="ev-item"><span class="n">证据</span><span>1500万→关联企业 · 500万→理财 · 300万→外部 · 200万→经营</span></div>
+      <div class="ev-item"><span class="n">因果</span><span>CATE=0.23 [0.15,0.31] · 策略真实有效</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px"><span class="badge amber">置信度 86%</span><span class="badge gray">不确定性：资金最终去向待确认</span></div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm primary" onclick="go('moneystory')">查看资金故事</button></div></div>`;
+}
+function aguiCustomer(){
+  return `<div><b>客户分析：张伟民</b>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><span class="badge blue">民营企业家</span><span class="badge amber">金葵花 · 高价值</span><span class="badge red">情绪：焦虑</span></div>
+    <div style="margin-top:10px;font-size:12.5px;line-height:1.8;color:var(--text-2)">金融状态 ¥5,500万 · 行为状态 活跃 · 关系状态 紧密 · 风险状态 流失预警</div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm primary" onclick="go('customer')">打开客户360</button></div></div>`;
+}
+function aguiEvent(){
+  return `<div><b>查询事件：李建国的到期事件</b>
+    <div style="margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe;font-size:12px;line-height:1.8">
+      <div class="ev-item"><span class="n">事件</span><span>定期到期 DEPOSIT_MATURITY</span></div>
+      <div class="ev-item"><span class="n">时间</span><span>2026-10-09（3天后）</span></div>
+      <div class="ev-item"><span class="n">金额</span><span>2000万 · 概率95%</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm primary" onclick="go('event')">查看事件雷达</button><button class="btn sm ghost" onclick="go('opportunity')">关联机会</button></div></div>`;
+}
+function aguiSummary(){
+  return `<div><b>总结客户：王芳</b>
+    <div style="margin-top:10px;font-size:12.5px;line-height:1.8;color:var(--text-2)">客户处于子女教育金筹备期，近期情绪偏焦虑（效价-0.32）。当前不宜做产品营销，建议采用关怀性触达。</div>
+    <div style="display:flex;gap:6px;margin-top:10px"><span class="badge amber">情绪-意图分离 ⚠</span><span class="badge green">置信度 81%</span></div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm ghost" onclick="go('customer')">查看客户</button></div></div>`;
+}
+function aguiGeneric(){
+  return `<div><b>AI 客户经理助手</b>
+    <div style="margin-top:10px;font-size:12.5px;line-height:1.8;color:var(--text-2)">我可以帮你：找客户、分析客户、找机会、解释变化、查询事件、生成策略、生成任务、总结客户。请用自然语言描述你的需求。</div>
+    <div style="display:flex;gap:6px;margin-top:10px"><span class="badge blue">支持8类查询</span><span class="badge gray">权限隔离</span></div></div>`;
+}
+
+/* ---------- 全局搜索 ---------- */
+function globalSearch(v){
+  const q = v.trim();
+  if(!q){ toast('请输入搜索关键词'); return; }
+  if(/张伟民|张/.test(q)){ go('customer'); toast('已定位客户：张伟民'); }
+  else if(/李建国|李/.test(q)){ go('opportunity'); toast('已定位：李建国 · 到期承接机会'); }
+  else if(/刘敏/.test(q)){ go('customer'); toast('已定位：刘敏 · 沉睡客户'); }
+  else if(/机会/.test(q)){ go('opportunity'); toast('已跳转机会中心'); }
+  else if(/事件/.test(q)){ go('event'); toast('已跳转事件雷达'); }
+  else if(/任务/.test(q)){ go('task'); toast('已跳转任务面板'); }
+  else if(/模拟|策略/.test(q)){ go('simulate'); toast('已跳转策略模拟'); }
+  else { toast('未匹配到结果，试试「张伟民」「机会」「事件」'); }
+}
+
+/* ---------- 编辑模式 / 保存 / 导出 ---------- */
+function toggleEdit(){
+  const on = !document.body.classList.contains('editing');
+  document.body.classList.toggle('editing', on);
+  document.querySelectorAll('#protoMain [data-e]').forEach(el=>{
+    el.setAttribute('contenteditable', on ? 'plaintext-only' : 'false');
+  });
+  const t = document.getElementById('editToggle');
+  t.classList.toggle('on', on);
+  t.querySelector('.lbl').textContent = on ? '编辑中' : '编辑模式';
+  toast(on ? '编辑模式已开启：点击任意文字即可修改' : '编辑模式已关闭');
+}
+function snapshotMain(){
+  const c = document.getElementById('protoMain').cloneNode(true);
+  c.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));
+  return c.innerHTML;
+}
+function saveContent(){
+  const html = snapshotMain();
+  try{ localStorage.setItem(LS_KEY, html); toast('已保存到本地（localStorage）'); }
+  catch(e){ toast('保存失败：' + e.message); }
+}
+function restoreContent(){
+  try{
+    const saved = localStorage.getItem(LS_KEY);
+    if(saved) document.getElementById('protoMain').innerHTML = saved;
+  }catch(e){}
+}
+function exportHTML(){
+  const clone = document.documentElement.cloneNode(true);
+  clone.classList.remove('editing');
+  clone.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));
+  clone.querySelectorAll('.edit-banner').forEach(el=>el.remove());
+  clone.querySelectorAll('.toast-wrap').forEach(el=>el.innerHTML='');
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '银行存客经营智能体_交互原型.html';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+  toast('已导出为独立 HTML 文件');
+}
+
+/* ---------- 初始化 ---------- */
+function init(){
+  restoreContent();
+  renderScenBar();
+
+  // hash 深链：支持 #radar / #customer / #moneystory 等直达对应页
+  function applyHash(){
+    var h = (location.hash||'').replace('#','').trim();
+    if(h && PAGES[h]){ go(h); }
+  }
+  applyHash();
+  window.addEventListener('hashchange', applyHash);
+
+  document.getElementById('sbNav').addEventListener('click', function(e){
+    const b = e.target.closest('.sb-item[data-page]');
+    if(b) go(b.dataset.page);
+  });
+
+  document.addEventListener('click', function(e){
+    if(document.body.classList.contains('editing')) return;
+    const el = e.target.closest('[data-drawer]');
+    if(el){ openDrawer(DRAWERS[el.dataset.drawer].title, DRAWERS[el.dataset.drawer].body); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') closeDrawer();
+  });
+
+  document.getElementById('globalSearch').addEventListener('keydown', function(e){
+    if(e.key==='Enter') globalSearch(this.value);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+
+/* ============================================================
+   自动演示模式（?auto=1 时启用）
+   在当前页面内自动逐个演示可点击区域：详情抽屉 / 任务勾选 / 场景步骤 / 操作按钮
+   ============================================================ */
+(function(){
+  var enabled = false;
+  try { enabled = new URLSearchParams(location.search).get('auto') === '1'; } catch(e){ return; }
+  if(!enabled) return;
+
+  var TICK = 900;          // 每步演示间隔
+  var timers = [];
+  var running = false;
+  var badge = null;
+  var lastEl = null;
+
+  function clearHot(){
+    document.querySelectorAll('.auto-hot').forEach(function(el){ el.classList.remove('auto-hot'); });
+  }
+  function badgeShow(txt){
+    if(!badge){
+      badge = document.createElement('div');
+      badge.className = 'auto-badge';
+      badge.innerHTML = '<i></i><span id="autoBadgeTxt">自动演示中…</span>';
+      document.body.appendChild(badge);
+    }
+    var t = document.getElementById('autoBadgeTxt');
+    if(t) t.textContent = txt;
+  }
+  function post(msg){
+    try { parent.postMessage(msg, '*'); } catch(e){}
+  }
+
+  /* 收集当前页面的可演示热点 */
+  function hotspots(){
+    var page = document.querySelector('.page.active') || document.body;
+    var sel = '[data-drawer], .task-check, .scen-step, .scen-card, button.btn, .chip[data-page], [data-toggle]';
+    var list = [];
+    try { list = Array.prototype.slice.call(page.querySelectorAll(sel)); } catch(e){ list = []; }
+    list = list.filter(function(el){
+      if(el.closest('.drawer')) return false;
+      var oc = el.getAttribute('onclick') || '';
+      if(oc.indexOf('go(') === 0) return false;            // 跳过页面跳转，避免打乱演示动线
+      var r = el.getBoundingClientRect();
+      if(r.width < 8 || r.height < 8) return false;
+      var st = getComputedStyle(el);
+      if(st.display === 'none' || st.visibility === 'hidden' || parseFloat(st.opacity) < .05) return false;
+      return true;
+    });
+    // 顶部场景切换条也纳入演示
+    document.querySelectorAll('#scenSteps .scen-step, .scen-step').forEach(function(el){
+      if(list.indexOf(el) < 0) list.push(el);
+    });
+    return list;
+  }
+
+  function label(el){
+    var txt = (el.getAttribute('data-drawer-label') || el.innerText || el.getAttribute('aria-label') || '').trim();
+    txt = txt.replace(/\s+/g, ' ').slice(0, 26);
+    if(!txt && el.className) txt = String(el.className).split(' ')[0];
+    return txt || '交互区域';
+  }
+
+  function drawerOpen(){
+    var m = document.getElementById('drawerMask');
+    return !!(m && m.classList.contains('show'));
+  }
+
+  var idx = 0;
+  function tick(){
+    if(!running) return;
+    // 抽屉已打开 → 先收起，让用户看清内容再继续
+    if(drawerOpen()){
+      clearHot();
+      badgeShow('查看详情 → 收起');
+      post({type:'protoDemo', hint:'查看详情钩子 · ' + (lastEl ? label(lastEl) : '详情抽屉')});
+      setTimeout(function(){ try { closeDrawer(); } catch(e){} }, 500);
+      timers.push(setTimeout(tick, TICK + 400));
+      return;
+    }
+    var list = hotspots();
+    if(!list.length){
+      badgeShow('本页浏览中…');
+      var main = document.getElementById('protoMain');
+      if(main){
+        var step = Math.min(main.clientHeight * 0.55, 320);
+        if(main.scrollTop + main.clientHeight < main.scrollHeight - 4){
+          main.scrollTo({top: main.scrollTop + step, behavior:'smooth'});
+          post({type:'protoDemo', hint:'自动浏览页面内容'});
+        } else {
+          main.scrollTo({top:0, behavior:'smooth'});
+        }
+      }
+      timers.push(setTimeout(tick, TICK + 500));
+      return;
+    }
+    idx = idx % list.length;
+    var el = list[idx++];
+    lastEl = el;
+    clearHot();
+    el.classList.add('auto-hot');
+    try { el.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'}); } catch(e){}
+    var msg = '演示点击 · ' + label(el);
+    badgeShow(msg);
+    post({type:'protoDemo', hint: label(el)});
+    timers.push(setTimeout(function(){
+      if(!running) return;
+      try {
+        el.classList.add('auto-click');
+        el.click();
+        var evt = new MouseEvent('click', {bubbles:true, cancelable:true, view:window});
+        el.dispatchEvent(evt);
+      } catch(e){}
+    }, 330));
+    timers.push(setTimeout(tick, TICK + 120));
+  }
+
+  function stop(){
+    running = false;
+    timers.forEach(clearTimeout);
+    timers = [];
+    clearHot();
+    if(badge){ badge.remove(); badge = null; }
+  }
+  function start(){
+    if(running) return;
+    running = true;
+    timers.push(setTimeout(tick, 700));
+  }
+
+  window.addEventListener('message', function(e){
+    var d = e.data || {};
+    if(!d || d.type !== 'protoDemoCmd') return;
+    if(d.cmd === 'pause'){ stop(); post({type:'protoDemo', hint:'演示已暂停'}); }
+    else if(d.cmd === 'resume'){ start(); }
+    else if(d.cmd === 'reset'){ stop(); idx = 0; start(); }
+  });
+
+  // 页面切换后重置热点游标
+  window.addEventListener('hashchange', function(){ idx = 0; });
+
+  function boot(){
+    start();
+    post({type:'protoDemo', hint:'自动演示已启动'});
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+</body>
+</html>
